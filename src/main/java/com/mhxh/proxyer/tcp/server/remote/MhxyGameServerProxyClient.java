@@ -2,11 +2,9 @@ package com.mhxh.proxyer.tcp.server.remote;
 
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.netty.AbstractLinkGameServerClient;
+import com.mhxh.proxyer.tcp.server.handler.MyDelimiterBasedFrameDecoder;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.FixedLengthFrameDecoder;
 
 import java.nio.charset.Charset;
 
@@ -31,15 +29,15 @@ public class MhxyGameServerProxyClient extends AbstractLinkGameServerClient {
             protected void initChannel(Channel channel) throws Exception {
                 ChannelPipeline pipeline = channel.pipeline();
 
-                ByteBuf delimiter = Unpooled.copiedBuffer("return ret end".getBytes());
 
-                pipeline.addLast(new DelimiterBasedFrameDecoder(8192, false, delimiter));
+                pipeline.addLast(new MyDelimiterBasedFrameDecoder());
 
                 pipeline.addLast(new SimpleChannelInboundHandler<ByteBuf>() {
                     @Override
                     protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
                         ByteBuf receive = byteBuf.retainedSlice();
-                        logger.info("{},数据长度：{}服务返回数据：{}", channelHandlerContext.channel().id(),receive.readableBytes() ,receive.toString(Charset.forName("GBK")));
+                        // 复制
+                        logger.info("{},数据长度：{},服务返回数据：{}", channelHandlerContext.channel().id(), receive.readableBytes(), receive.toString(Charset.forName("GBK")));
                         receive.release();
 
                         Channel local = exchanger.getLocalByRemote(channelHandlerContext.channel());
