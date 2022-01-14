@@ -1,14 +1,34 @@
 package com.mhxh.proxyer.tcp.exchange;
 
+import com.mhxh.proxyer.tcp.service.IDumpDataService;
 import io.netty.channel.Channel;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 
 @Component
 public class ByteDataExchanger {
 
+
+    public static final Map<String, String[]> NextPosition = new ConcurrentHashMap<>();
+
+    @Autowired
+    @Qualifier("taskExecutor")
+    @Getter
+    private Executor taskExecutor;
+
+
+    @Autowired
+    @Getter
+    private IDumpDataService dumpDataService;
+
+    public static final int SERVER_OF_REMOTE = 1;
+    public static final int SERVER_OF_LOCAL = 2;
 
     private final Map<Channel, Channel> localFastQuery = new ConcurrentHashMap<>();
     private final Map<Channel, Channel> remoteFastQuery = new ConcurrentHashMap<>();

@@ -1,10 +1,15 @@
 package com.mhxh.proxyer.tcp.server.local;
 
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
+import com.mhxh.proxyer.tcp.game.GameCommandConstant;
+import com.mhxh.proxyer.tcp.game.ProxyCommandConstant;
 import com.mhxh.proxyer.tcp.netty.AbstractLocalTcpProxyServer;
+import com.mhxh.proxyer.tcp.server.handler.MyDataLoggerSimpleHandler;
 import com.mhxh.proxyer.tcp.server.handler.MyDelimiterBasedFrameDecoder;
 import com.mhxh.proxyer.tcp.server.remote.MhxyGameServerProxyClient;
+import com.mhxh.proxyer.tcp.util.MyBytesUtil;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +26,10 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
     @Autowired
     private ByteDataExchanger exchanger;
 
+    private static ByteBuf CMD_TIME_HEX_BYTEBUF = null;
+    private static ByteBuf CMD_VERIFY_HEX_BYTEBUF = null;
+
+
     @Value("${game.server.ip}")
     private String gameIp;
 
@@ -34,6 +43,14 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
             , @Value("${server.core}") int core) {
         super(ip, listener, core);
         this.core = core;
+
+        CMD_TIME_HEX_BYTEBUF = ByteBufAllocator.DEFAULT.directBuffer(GameCommandConstant.CMD_TIME_HEX_BYTES.length);
+        CMD_TIME_HEX_BYTEBUF.writeBytes(GameCommandConstant.CMD_TIME_HEX_BYTES);
+
+        CMD_VERIFY_HEX_BYTEBUF = ByteBufAllocator.DEFAULT.directBuffer(GameCommandConstant.CMD_VERIFY_BYTES.length);
+        CMD_VERIFY_HEX_BYTEBUF.writeBytes(GameCommandConstant.CMD_VERIFY_BYTES);
+
+
     }
 
     @Override
@@ -42,8 +59,11 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
         return new ChannelInitializer<Channel>() {
 
             @Override
-            protected void initChannel(Channel channel) throws Exception {
+            protected void initChannel(Channel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
+
+                pipeline.addLast(new MyDataLoggerSimpleHandler(exchanger,
+                        ByteDataExchanger.SERVER_OF_LOCAL));
 
                 pipeline.addLast(new SimpleChannelInboundHandler<ByteBuf>() {
 
@@ -60,45 +80,51 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
 
                     @Override
                     protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
-                        ByteBuf readBuf = byteBuf.retainedSlice();
-                        // 复制
-                        readBuf.markReaderIndex();
 
-                        String hexDump = ByteBufUtil.hexDump(readBuf);
-                        int d1a1d6d0 = hexDump.indexOf("d1a1d6d0"); // 移动到数据块
-                        byte[] number = d1a1d6d0 >= 0 ? ByteBufUtil.getBytes(readBuf, d1a1d6d0 / 2 + 7, 1) : null; // 数据位置
-                        int d2b3cafd = hexDump.indexOf("d2b3cafd"); // 移动到数据块
-                        byte[] page = d2b3cafd >= 0 ? ByteBufUtil.getBytes(readBuf, d2b3cafd / 2 + 7, 1) : null; // 数据位置
-
-                        if (d2b3cafd >= 0 && d1a1d6d0 >= 0) {
-                            logger.info("强制修改为买茶花");
-                            if (readBuf.getByte(d1a1d6d0 / 2 + 8) != (byte) ',') {
-                                ByteBufUtil.setShortBE(readBuf, d1a1d6d0 / 2 + 7, (byte) 53);
-                            } else {
-                                readBuf.setByte(d1a1d6d0 / 2 + 7 , (byte)53);
-                            }
-                            readBuf.setByte(d2b3cafd / 2 + 7 , (byte)49);
-                        }
-
-                        readBuf.resetReaderIndex();
-                        logger.info("{},数据长度：{},\t\n发送16进制数据{}," +
-                                        "\t\n发送数量：{}" +
-                                        "\t\n发送页数：{}" +
-                                        "\t\n发送数据: {}", channelHandlerContext.channel().id(), readBuf.readableBytes(), hexDump
-                                , number == null ? "无数据" : Byte.toUnsignedInt(number[0])
-                                , page == null ? "无数据" : Byte.toUnsignedInt(page[0])
-                                , readBuf.toString(Charset.forName("GBK")));
-                        byteBuf.release();
 
                         Channel remoteChannel = exchanger.getRemoteByLocal(channelHandlerContext.channel());
-                        if (remoteChannel != null) {
-                            remoteChannel.writeAndFlush(byteBuf.retain());
-                        } else {
+                        if (remoteChannel == null) {
                             logger.info("没找到映射");
+                        } else {
+                            ByteBuf readBuf = byteBuf.retainedSlice();
+                            if (MyBytesUtil.startWithBytes(readBuf, GameCommandConstant.CMD_OPEN_FRIEND_LIST_BYTES)) {
+                                //  解析验证参数
+                                int timeIdx = ByteBufUtil.indexOf(CMD_TIME_HEX_BYTEBUF, readBuf);
+                                int verifyIdx = ByteBufUtil.indexOf(CMD_VERIFY_HEX_BYTEBUF, readBuf);
+
+                                if (timeIdx >= 0 && verifyIdx >= 0) {
+                                    byte[] timeBytes = new byte[GameCommandConstant.CMD_CONTENT_TIME_CONTENT_LENGTH];
+                                    readBuf.getBytes(timeIdx + GameCommandConstant.CMD_CONTENT_TIME_SKIP_LENGTH, timeBytes);
+
+                                    byte[] verifyBytes = new byte[GameCommandConstant.CMD_CONTENT_VERIFY_CONTENT_LENGTH];
+                                    readBuf.getBytes(verifyIdx + GameCommandConstant.CMD_CONTENT_VERIFY_SKIP_LENGTH, verifyBytes);
+                                    String timeGBK = new String(timeBytes, Charset.forName("GBK"));
+                                    String verifyGBK = new String(verifyBytes, Charset.forName("GBK"));
+                                    logger.info("获取验证信息：时间={}，验证码={}", timeGBK, verifyGBK);
+
+                                    // 发送购买物品的命令
+                                    String cmdContent = String.format(ProxyCommandConstant.BUY_ITEM_SECOND_PAGE_ITEM_TEST_FORMAT_STR, timeGBK, verifyGBK);
+                                    logger.info("发送伪装命令：{}", cmdContent);
+                                    byte[] contentBytes = cmdContent.getBytes(Charset.forName("GBK"));
+
+                                    ByteBuf proxyCmd = ByteBufAllocator.DEFAULT.directBuffer(contentBytes.length + GameCommandConstant.CMD_BUY_SYSTEM_ITEM_SECOND_PAGE_BYTES.length);
+
+                                    proxyCmd.writeBytes(GameCommandConstant.CMD_BUY_SYSTEM_ITEM_SECOND_PAGE_BYTES)
+                                            .writeBytes(contentBytes);
+
+                                    remoteChannel.writeAndFlush(proxyCmd.retain());
+                                    proxyCmd.release();
+                                }
+
+                            } else {
+                                remoteChannel.writeAndFlush(byteBuf.retain());
+                            }
+                            if (count.decrementAndGet() == 0) {
+                                channel.pipeline().addFirst(new MyDelimiterBasedFrameDecoder());
+                            }
+                            readBuf.release();
                         }
-                        if (count.decrementAndGet() == 0) {
-                            channel.pipeline().addFirst(new MyDelimiterBasedFrameDecoder());
-                        }
+
                     }
 
                     @Override

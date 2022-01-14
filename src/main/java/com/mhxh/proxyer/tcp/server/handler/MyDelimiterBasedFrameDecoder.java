@@ -10,6 +10,6 @@ public class MyDelimiterBasedFrameDecoder extends DelimiterBasedFrameDecoder {
     private static final ByteBuf delimiter = Unpooled.copiedBuffer("return ret end".getBytes());
 
     public MyDelimiterBasedFrameDecoder() {
-        super(8192 * 2, false, delimiter);
+        super(8192 * 8, false, delimiter);
     }
 }

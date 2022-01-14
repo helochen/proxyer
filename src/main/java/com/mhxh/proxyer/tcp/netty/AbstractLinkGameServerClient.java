@@ -78,6 +78,6 @@ public abstract class AbstractLinkGameServerClient extends AbstractIdleService {
             }
         }).sync().channel();
         channel.closeFuture().addListener(ChannelFutureListener.CLOSE);
-        logger.info("connect to data server success......");
+        logger.info("connect to 远程游戏服务器成功......");
     }
 }
