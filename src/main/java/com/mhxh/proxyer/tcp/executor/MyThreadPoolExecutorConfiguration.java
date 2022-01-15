@@ -14,13 +14,13 @@ public class MyThreadPoolExecutorConfiguration {
 
 
 
-    @Value("${bd.thread.pool.core:2}")
+    @Value("${bd.thread.pool.core:4}")
     private int core;
 
     @Value("${bd.thread.pool.maxQueue:1500}")
     private int maxQueue;
 
-    @Value("${bd.thread.pool.pool:500}")
+    @Value("${bd.thread.pool.pool:50}")
     private int pool;
 
 

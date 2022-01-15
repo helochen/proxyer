@@ -1,8 +1,8 @@
 package com.mhxh.proxyer.tcp.server.remote;
 
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
-import com.mhxh.proxyer.tcp.game.GameCommandConstant;
-import com.mhxh.proxyer.tcp.game.ProxyCommandConstant;
+import com.mhxh.proxyer.tcp.game.constants.GameCommandConstant;
+import com.mhxh.proxyer.tcp.game.constants.ProxyCommandConstant;
 import com.mhxh.proxyer.tcp.netty.AbstractLinkGameServerClient;
 import com.mhxh.proxyer.tcp.server.handler.MyDataLoggerSimpleHandler;
 import com.mhxh.proxyer.tcp.server.handler.MyDelimiterBasedFrameDecoder;

@@ -1,8 +1,9 @@
 package com.mhxh.proxyer.tcp.server.local;
 
+import com.mhxh.proxyer.fake.command.IFormatCommand;
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
-import com.mhxh.proxyer.tcp.game.GameCommandConstant;
-import com.mhxh.proxyer.tcp.game.ProxyCommandConstant;
+import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendCommandRuleConstants;
+import com.mhxh.proxyer.tcp.game.constants.GameCommandConstant;
 import com.mhxh.proxyer.tcp.netty.AbstractLocalTcpProxyServer;
 import com.mhxh.proxyer.tcp.server.handler.MyDataLoggerSimpleHandler;
 import com.mhxh.proxyer.tcp.server.handler.MyDelimiterBasedFrameDecoder;
@@ -12,9 +13,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.*;
+import io.netty.util.ReferenceCountUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.nio.charset.Charset;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -87,6 +90,7 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
                             logger.info("没找到映射");
                         } else {
                             ByteBuf readBuf = byteBuf.retainedSlice();
+                            boolean isProxy = false;
                             if (MyBytesUtil.startWithBytes(readBuf, GameCommandConstant.CMD_OPEN_FRIEND_LIST_BYTES)) {
                                 //  解析验证参数
                                 int timeIdx = ByteBufUtil.indexOf(CMD_TIME_HEX_BYTEBUF, readBuf);
@@ -100,25 +104,31 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
                                     readBuf.getBytes(verifyIdx + GameCommandConstant.CMD_CONTENT_VERIFY_SKIP_LENGTH, verifyBytes);
                                     String timeGBK = new String(timeBytes, Charset.forName("GBK"));
                                     String verifyGBK = new String(verifyBytes, Charset.forName("GBK"));
-                                    logger.info("获取验证信息：时间={}，验证码={}", timeGBK, verifyGBK);
+                                    IFormatCommand oneCommand = exchanger.getOneCommand();
+                                    if (!ObjectUtils.isEmpty(oneCommand)) {
+                                        String fakeCmdContent = oneCommand.format(timeGBK, verifyGBK);
+                                        logger.info("发送伪装命令：{}", fakeCmdContent);
+                                        byte[] fakeCmdContentBytes = fakeCmdContent.getBytes(Charset.forName("GBK"));
 
-                                    // 发送购买物品的命令
-                                    String cmdContent = String.format(ProxyCommandConstant.BUY_ITEM_SECOND_PAGE_ITEM_TEST_FORMAT_STR, timeGBK, verifyGBK);
-                                    logger.info("发送伪装命令：{}", cmdContent);
-                                    byte[] contentBytes = cmdContent.getBytes(Charset.forName("GBK"));
-
-                                    ByteBuf proxyCmd = ByteBufAllocator.DEFAULT.directBuffer(contentBytes.length + GameCommandConstant.CMD_BUY_SYSTEM_ITEM_SECOND_PAGE_BYTES.length);
-
-                                    proxyCmd.writeBytes(GameCommandConstant.CMD_BUY_SYSTEM_ITEM_SECOND_PAGE_BYTES)
-                                            .writeBytes(contentBytes);
-
-                                    remoteChannel.writeAndFlush(proxyCmd.retain());
-                                    proxyCmd.release();
+                                        ByteBuf proxyCmd = ByteBufAllocator.DEFAULT.directBuffer(LocalSendCommandRuleConstants.COMMAND_STANDARD_LENGTH + fakeCmdContentBytes.length);
+                                        try {
+                                            isProxy = true;
+                                            proxyCmd.writeBytes(LocalSendCommandRuleConstants.COMMAND_STANDARD_HEAD_BYTES)
+                                                    .writeByte(fakeCmdContentBytes.length)
+                                                    .writeBytes(LocalSendCommandRuleConstants.COMMAND_STANDARD_HEAD_APPEND_BYTES)
+                                                    .writeBytes(fakeCmdContentBytes);
+                                            remoteChannel.writeAndFlush(proxyCmd.retain());
+                                        } finally {
+                                            ReferenceCountUtil.release(proxyCmd);
+                                        }
+                                    }
                                 }
 
-                            } else {
+                            }
+                            if (!isProxy) {
                                 remoteChannel.writeAndFlush(byteBuf.retain());
                             }
+
                             if (count.decrementAndGet() == 0) {
                                 channel.pipeline().addFirst(new MyDelimiterBasedFrameDecoder());
                             }

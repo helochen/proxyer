@@ -1,19 +1,29 @@
 package com.mhxh.proxyer.tcp.exchange;
 
+import com.mhxh.proxyer.fake.command.BaseCommand;
+import com.mhxh.proxyer.fake.command.IFormatCommand;
 import com.mhxh.proxyer.tcp.service.IDumpDataService;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 
 @Component
 public class ByteDataExchanger {
 
+    /**
+     * 增加一个命令列表，每一个命令都是由一系列命令构成
+     */
+    private final Queue<Queue<BaseCommand>> tasks = new ConcurrentLinkedDeque<>();
 
     public static final Map<String, String[]> NextPosition = new ConcurrentHashMap<>();
 
@@ -55,4 +65,35 @@ public class ByteDataExchanger {
         return remote;
     }
 
+
+    /***
+     * 增加一个命令链子
+     * @param taskQueue
+     */
+    public void addFakeCommand(Queue<BaseCommand> taskQueue) {
+        tasks.offer(taskQueue);
+        synchronized (this) {
+            if (CollectionUtils.isEmpty(currentCommandQueue)) {
+                currentCommandQueue = tasks.poll();
+            }
+        }
+    }
+
+    private Queue<BaseCommand> currentCommandQueue;
+
+    /**
+     * 获取当前需要转换的命令
+     *
+     * @return
+     */
+    public synchronized IFormatCommand getOneCommand() {
+        if (!ObjectUtils.isEmpty(currentCommandQueue)) {
+            BaseCommand current = currentCommandQueue.poll();
+            if (CollectionUtils.isEmpty(currentCommandQueue)) {
+                currentCommandQueue = tasks.poll();
+            }
+            return current;
+        }
+        return null;
+    }
 }

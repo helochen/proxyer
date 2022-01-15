@@ -1,4 +1,4 @@
-package com.mhxh.proxyer.tcp.game;
+package com.mhxh.proxyer.tcp.game.constants;
 
 import io.netty.buffer.ByteBufUtil;
 
