@@ -47,6 +47,8 @@ public class LocalSendCommandRuleConstants {
 
     /**
      * 使用道具后会有个无名的操作,应该是通知服务器刷新之类的，毕竟数据发生变动
+     *
+     * 2022-01-16 这个是打开背包的协议
      */
     public static final String USE_ITEM_FORMAT_GBK_APPEND = "3699*-*do local ret={[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
 
