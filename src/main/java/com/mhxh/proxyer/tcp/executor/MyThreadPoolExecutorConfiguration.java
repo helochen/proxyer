@@ -17,7 +17,7 @@ public class MyThreadPoolExecutorConfiguration {
     @Value("${bd.thread.pool.core:4}")
     private int core;
 
-    @Value("${bd.thread.pool.maxQueue:1500}")
+    @Value("${bd.thread.pool.maxQueue:5000}")
     private int maxQueue;
 
     @Value("${bd.thread.pool.pool:50}")
@@ -33,7 +33,7 @@ public class MyThreadPoolExecutorConfiguration {
         taskExecutor.setMaxPoolSize(pool);
         taskExecutor.setKeepAliveSeconds(10);
         taskExecutor.setAllowCoreThreadTimeOut(true);
-        taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+        taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy());
         taskExecutor.initialize();
 
         return taskExecutor;

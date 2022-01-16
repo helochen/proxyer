@@ -53,4 +53,20 @@ public class LocalSendCommandRuleConstants {
     public static final String USE_ITEM_FORMAT_GBK_APPEND = "3699*-*do local ret={[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
 
 
+    /**
+     * 飞往江南野外的功能，会提示距离过远
+     */
+    public static final String USE_TRANSFER_TO_JIANG_NAN_YEWAI_MSG_GBK = "1003*-*do local ret={[\"说明\"]=\"长安传送江南野外\",[\"时间\"]=%s,[\"数据验证\"]=\"%s\",[\"id\"]=1} return ret end";
+
+
+    /**
+     * 行走地图,目的地
+     */
+    public static final String ROLE_WALK_TO_DESTINATION_GBK = "1001*-*do local ret={[\"y\"]=%s,[\"x\"]=%y,[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+
+
+    /**
+     * 行走过程
+     */
+    public static final String ROLE_WALKING_GBK = "1002*-*do local ret={[\"x\"]=%s,[\"方向\"]=1,[\"类型\"]=\"行走\",[\"y\"]=%s,[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
 }

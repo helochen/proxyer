@@ -25,8 +25,6 @@ public class ByteDataExchanger {
      */
     private final Queue<Queue<BaseCommand>> tasks = new ConcurrentLinkedDeque<>();
 
-    public static final Map<String, String[]> NextPosition = new ConcurrentHashMap<>();
-
     @Autowired
     @Qualifier("taskExecutor")
     @Getter

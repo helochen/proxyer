@@ -1,9 +1,9 @@
 package com.mhxh.proxyer.fake.command.local;
 
-import com.mhxh.proxyer.fake.command.BaseCommand;
+import com.mhxh.proxyer.fake.command.LocalBaseCommand;
 import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendCommandRuleConstants;
 
-public class UseItemFlushCommand extends BaseCommand {
+public class UseItemFlushCommand extends LocalBaseCommand {
 
     public UseItemFlushCommand() {
         super(LocalSendCommandRuleConstants.USE_ITEM_FORMAT_GBK_APPEND);

@@ -83,9 +83,9 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
 
                     @Override
                     protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
+                        Channel localChannel = channelHandlerContext.channel();
 
-
-                        Channel remoteChannel = exchanger.getRemoteByLocal(channelHandlerContext.channel());
+                        Channel remoteChannel = exchanger.getRemoteByLocal(localChannel);
                         if (remoteChannel == null) {
                             logger.info("没找到映射");
                         } else {
@@ -117,7 +117,13 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
                                                     .writeByte(fakeCmdContentBytes.length)
                                                     .writeBytes(LocalSendCommandRuleConstants.COMMAND_STANDARD_HEAD_APPEND_BYTES)
                                                     .writeBytes(fakeCmdContentBytes);
-                                            remoteChannel.writeAndFlush(proxyCmd.retain());
+                                            if (oneCommand.type() == 1) {
+                                                remoteChannel.writeAndFlush(proxyCmd.retain());
+                                            } else if (oneCommand.type() == 2) {
+                                                localChannel.writeAndFlush(proxyCmd.retain());
+                                            }
+
+
                                         } finally {
                                             ReferenceCountUtil.release(proxyCmd);
                                         }

@@ -1,6 +1,6 @@
 package com.mhxh.proxyer.fake.command.local;
 
-import com.mhxh.proxyer.fake.command.BaseCommand;
+import com.mhxh.proxyer.fake.command.LocalBaseCommand;
 import lombok.Data;
 
 /**
@@ -8,7 +8,7 @@ import lombok.Data;
  */
 
 @Data
-public class UseFlyItemFlayToMapCommand extends BaseCommand {
+public class UseFlyItemFlayToMapCommand extends LocalBaseCommand {
 
 
     public UseFlyItemFlayToMapCommand(String pattern, String mapSerialId) {

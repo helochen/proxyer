@@ -21,4 +21,22 @@ public class LocalCommandQueueController {
         registerWaitCommandService.flyToMap(mapId);
         return "success";
     }
+
+    @RequestMapping("fly-sect")
+    public String testFlyToSect(@RequestParam("sect") String sect) {
+        registerWaitCommandService.flyToSect(sect);
+        return "success";
+    }
+
+    @RequestMapping("fly-jiangnan")
+    public String testFlyJiangNan() {
+        registerWaitCommandService.flyToJiangNanMap();
+        return "success";
+    }
+
+    @RequestMapping("fly-flag")
+    public String flayFlag(@RequestParam("itemIdx") String itemIdx, @RequestParam("mapId") String mapId) {
+        registerWaitCommandService.useFlagFlyToMap(itemIdx, mapId);
+        return "success";
+    }
 }

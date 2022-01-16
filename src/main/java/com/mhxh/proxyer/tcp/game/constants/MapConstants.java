@@ -31,10 +31,15 @@ public class MapConstants {
         CODE_TO_SERIAL_NO.put(MAP_ID_ZZG, "8");
         CODE_TO_SERIAL_NO.put(MAP_ID_AL, "4");
         CODE_TO_SERIAL_NO.put(MAP_ID_BX, "7");
+        CODE_TO_SERIAL_NO.put(MAP_ID_CHANG_AN, "2");
 
 
     }
 
+    /**
+     * 长安城,坐标与像素放大倍率是20
+     */
+    private static final String MAP_ID_CHANG_AN = "1001";
     /*
      * 建业
      * */

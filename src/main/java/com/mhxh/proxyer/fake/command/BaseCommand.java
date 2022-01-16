@@ -4,7 +4,7 @@ package com.mhxh.proxyer.fake.command;
 import lombok.Data;
 
 @Data
-public abstract class BaseCommand implements IFormatCommand{
+public abstract class BaseCommand implements IFormatCommand , IType{
 
     public BaseCommand(String pattern) {
         this.pattern = pattern;
