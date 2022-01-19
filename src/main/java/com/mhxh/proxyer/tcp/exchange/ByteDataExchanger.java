@@ -1,8 +1,10 @@
 package com.mhxh.proxyer.tcp.exchange;
 
-import com.mhxh.proxyer.fake.command.BaseCommand;
-import com.mhxh.proxyer.fake.command.IFormatCommand;
+import com.mhxh.proxyer.fake.command.base.BaseCommand;
+import com.mhxh.proxyer.fake.command.base.IFormatCommand;
+import com.mhxh.proxyer.fake.command.remote.refuse.IRefuseFilter;
 import com.mhxh.proxyer.tcp.service.IDumpDataService;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +13,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.Executor;
 
 @Component
@@ -24,6 +29,12 @@ public class ByteDataExchanger {
      * 增加一个命令列表，每一个命令都是由一系列命令构成
      */
     private final Queue<Queue<BaseCommand>> tasks = new ConcurrentLinkedDeque<>();
+
+    /**
+     * 过滤部分服务器数据列表
+     */
+    private final Set<IRefuseFilter> filters = new ConcurrentSkipListSet<>();
+
 
     @Autowired
     @Qualifier("taskExecutor")
@@ -38,6 +49,9 @@ public class ByteDataExchanger {
     public static final int SERVER_OF_REMOTE = 1;
     public static final int SERVER_OF_LOCAL = 2;
 
+    /**
+     * 管理TCP链接的功能
+     */
     private final Map<Channel, Channel> localFastQuery = new ConcurrentHashMap<>();
     private final Map<Channel, Channel> remoteFastQuery = new ConcurrentHashMap<>();
 
@@ -93,5 +107,21 @@ public class ByteDataExchanger {
             return current;
         }
         return null;
+    }
+
+    //TODO 如何让获取命令进入等待时机
+
+    /***
+     * 拒绝操作
+     */
+    public boolean filterServerCommand(ByteBuf byteBuf) {
+        Iterator<IRefuseFilter> iterator = filters.iterator();
+        while (iterator.hasNext()) {
+            boolean refuse = iterator.next().refuse(byteBuf);
+            if (refuse) {
+                return true;
+            }
+        }
+        return false;
     }
 }

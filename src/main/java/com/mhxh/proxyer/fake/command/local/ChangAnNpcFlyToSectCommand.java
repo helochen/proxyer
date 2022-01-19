@@ -1,6 +1,6 @@
 package com.mhxh.proxyer.fake.command.local;
 
-import com.mhxh.proxyer.fake.command.LocalBaseCommand;
+import com.mhxh.proxyer.fake.command.base.LocalBaseCommand;
 import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendCommandRuleConstants;
 import lombok.Data;
 

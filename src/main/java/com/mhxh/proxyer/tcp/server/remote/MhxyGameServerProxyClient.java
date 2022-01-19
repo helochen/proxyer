@@ -42,10 +42,12 @@ public class MhxyGameServerProxyClient extends AbstractLinkGameServerClient {
                 pipeline.addLast(new SimpleChannelInboundHandler<ByteBuf>() {
                     @Override
                     protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
-                        Channel local = exchanger.getLocalByRemote(channelHandlerContext.channel());
-                        if (null != local) {
-                            local.writeAndFlush(byteBuf.retain());
+                        if (exchanger.filterServerCommand(byteBuf)) {
+                            Channel local = exchanger.getLocalByRemote(channelHandlerContext.channel());
+                            if (null != local) {
+                                local.writeAndFlush(byteBuf.retain());
 
+                            }
                         }
                     }
                 });

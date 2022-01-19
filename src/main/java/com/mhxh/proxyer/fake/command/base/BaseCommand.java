@@ -1,4 +1,4 @@
-package com.mhxh.proxyer.fake.command;
+package com.mhxh.proxyer.fake.command.base;
 
 
 import lombok.Data;

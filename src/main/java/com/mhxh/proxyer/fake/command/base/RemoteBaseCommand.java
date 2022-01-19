@@ -1,4 +1,4 @@
-package com.mhxh.proxyer.fake.command;
+package com.mhxh.proxyer.fake.command.base;
 
 public abstract class RemoteBaseCommand extends LocalBaseCommand implements IType {
 

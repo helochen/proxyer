@@ -1,6 +1,6 @@
 package com.mhxh.proxyer.fake;
 
-import com.mhxh.proxyer.fake.command.BaseCommand;
+import com.mhxh.proxyer.fake.command.base.BaseCommand;
 import com.mhxh.proxyer.fake.command.local.*;
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendCommandRuleConstants;

@@ -1,7 +1,7 @@
 package com.mhxh.proxyer.fake.command.remote;
 
-import com.mhxh.proxyer.fake.command.IType;
-import com.mhxh.proxyer.fake.command.RemoteBaseCommand;
+import com.mhxh.proxyer.fake.command.base.IType;
+import com.mhxh.proxyer.fake.command.base.RemoteBaseCommand;
 import com.mhxh.proxyer.tcp.game.cmdfactory.FromGameServerCommandRuleConstants;
 
 
