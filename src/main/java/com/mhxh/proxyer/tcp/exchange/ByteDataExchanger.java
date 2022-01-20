@@ -1,6 +1,5 @@
 package com.mhxh.proxyer.tcp.exchange;
 
-import com.mhxh.proxyer.fake.command.base.BaseCommand;
 import com.mhxh.proxyer.fake.command.base.IFormatCommand;
 import com.mhxh.proxyer.fake.command.remote.refuse.IRefuseFilter;
 import com.mhxh.proxyer.tcp.service.IDumpDataService;
@@ -28,7 +27,7 @@ public class ByteDataExchanger {
     /**
      * 增加一个命令列表，每一个命令都是由一系列命令构成
      */
-    private final Queue<Queue<BaseCommand>> tasks = new ConcurrentLinkedDeque<>();
+    private final Queue<Queue<IFormatCommand>> tasks = new ConcurrentLinkedDeque<>();
 
     /**
      * 过滤部分服务器数据列表
@@ -45,6 +44,13 @@ public class ByteDataExchanger {
     @Autowired
     @Getter
     private IDumpDataService dumpDataService;
+
+    /**
+     * 模拟命令功能相关参数
+     */
+    private Queue<IFormatCommand> currentCommandQueue;
+    private boolean waiting = false;
+
 
     public static final int SERVER_OF_REMOTE = 1;
     public static final int SERVER_OF_LOCAL = 2;
@@ -82,7 +88,7 @@ public class ByteDataExchanger {
      * 增加一个命令链子
      * @param taskQueue
      */
-    public void addFakeCommand(Queue<BaseCommand> taskQueue) {
+    public void addFakeCommand(Queue<IFormatCommand> taskQueue) {
         tasks.offer(taskQueue);
         synchronized (this) {
             if (CollectionUtils.isEmpty(currentCommandQueue)) {
@@ -91,25 +97,28 @@ public class ByteDataExchanger {
         }
     }
 
-    private Queue<BaseCommand> currentCommandQueue;
-
     /**
      * 获取当前需要转换的命令
      *
      * @return
      */
     public synchronized IFormatCommand getOneCommand() {
-        if (!ObjectUtils.isEmpty(currentCommandQueue)) {
-            BaseCommand current = currentCommandQueue.poll();
+        if (!ObjectUtils.isEmpty(currentCommandQueue) && !waiting) {
+            IFormatCommand current = currentCommandQueue.poll();
             if (CollectionUtils.isEmpty(currentCommandQueue)) {
                 currentCommandQueue = tasks.poll();
+            }
+            if (!ObjectUtils.isEmpty(current)) {
+                current.beforeCommandAddFilters();
             }
             return current;
         }
         return null;
     }
 
-    //TODO 如何让获取命令进入等待时机
+    synchronized public boolean resetWaiting(boolean waiting) {
+        return this.waiting = waiting;
+    }
 
     /***
      * 拒绝操作
@@ -123,5 +132,15 @@ public class ByteDataExchanger {
             }
         }
         return false;
+    }
+
+
+    /**
+     * 添加拒绝命令
+     *
+     * @param instance
+     */
+    public void addRefuseCommand(IRefuseFilter instance) {
+        filters.add(instance);
     }
 }

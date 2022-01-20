@@ -1,13 +1,11 @@
 package com.mhxh.proxyer.fake.command.local;
 
 import com.mhxh.proxyer.fake.command.base.LocalBaseCommand;
-import lombok.Data;
 
 /**
  * 使用飞行符的信息
  */
 
-@Data
 public class UseFlyItemFlayToMapCommand extends LocalBaseCommand {
 
 

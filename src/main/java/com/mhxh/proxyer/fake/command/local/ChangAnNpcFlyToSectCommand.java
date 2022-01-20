@@ -2,16 +2,13 @@ package com.mhxh.proxyer.fake.command.local;
 
 import com.mhxh.proxyer.fake.command.base.LocalBaseCommand;
 import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendCommandRuleConstants;
-import lombok.Data;
 
-@Data
 public class ChangAnNpcFlyToSectCommand extends LocalBaseCommand {
-
 
     private String sectName;
 
     /**
-     * 帮派名称
+     * 门派名称
      *
      * @param sectName
      */
