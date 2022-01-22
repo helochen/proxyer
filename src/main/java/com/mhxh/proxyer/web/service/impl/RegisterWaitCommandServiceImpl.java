@@ -44,4 +44,9 @@ public class RegisterWaitCommandServiceImpl implements IRegisterWaitCommandServi
     public void useFlagFlyToMap(String mapIdx, String mapId) {
         registerFactory.registerFlyFlagToMap(mapIdx, mapId);
     }
+
+    @Override
+    public void catchGhost() {
+        registerFactory.registerCatchGhost();
+    }
 }

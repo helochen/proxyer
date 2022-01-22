@@ -2,14 +2,18 @@ package com.mhxh.proxyer.tcp.service.impl;
 
 
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
+import com.mhxh.proxyer.tcp.exchange.TaskDataManager;
 import com.mhxh.proxyer.tcp.game.constants.DataSplitConstant;
 import com.mhxh.proxyer.tcp.game.constants.TaskConstants;
+import com.mhxh.proxyer.tcp.game.task.ITaskBean;
+import com.mhxh.proxyer.tcp.game.task.TaskBeanCreateFactory;
 import com.mhxh.proxyer.tcp.service.IDumpDataService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.Charset;
@@ -18,6 +22,8 @@ import java.util.regex.Matcher;
 @Service
 public class DumpDataServiceImpl implements IDumpDataService {
 
+    @Autowired
+    private TaskDataManager taskDataManager;
 
     private static final Logger logger = LoggerFactory.getLogger(IDumpDataService.class);
 
@@ -33,7 +39,7 @@ public class DumpDataServiceImpl implements IDumpDataService {
             if (!gbk.contains("欢迎") && !gbk.contains("击败") && !gbk.contains("奖励") && !gbk.contains("活命")
                     && !gbk.contains("频道")) {
                 String hexDump = ByteBufUtil.hexDump(buf);
-                this.findTaskByReturnData(hexDump, gbk);
+                this.findTaskByReturnData(gbk);
                 logger.info("\n{}->\t发送16进制数据=>{}," +
                                 "\n{}->\t发送GBK解析数据=> {}", from,
                         hexDump, from, gbk);
@@ -46,19 +52,20 @@ public class DumpDataServiceImpl implements IDumpDataService {
         }
     }
 
-    private void findTaskByReturnData(String hexDump, String gbk) {
 
-        if (gbk.contains(TaskConstants.TASK_JIAN_HU)) {
+    private void findTaskByReturnData(String gbk) {
+
+        /**
+         * 看看是不是任务信息
+         */
+        if (gbk.contains(TaskConstants.TASK_JIAN_HU) || gbk.contains(TaskConstants.TASK_CATCH_GHOST)) {
             Matcher tasksFind = DataSplitConstant.DATA_PATTERN.matcher(gbk);
             while (tasksFind.find()) {
                 String taskContent = tasksFind.group();
-
-                if (taskContent.contains(TaskConstants.TASK_CATCH_GHOST)) {
-                    // TODO 地图位置，地图坐标
-
-                } else if (taskContent.contains(TaskConstants.TASK_JIAN_HU)) {
+                if (taskContent.contains(TaskConstants.TASK_CATCH_GHOST) || taskContent.contains(TaskConstants.TASK_JIAN_HU)) {
+                    ITaskBean taskBean = TaskBeanCreateFactory.createTaskBean(TaskConstants.TASK_CATCH_GHOST, taskContent);
+                    // 地图位置，地图坐标
                     Matcher p = DataSplitConstant.TASK_DECOMPOSITION_POSTION.matcher(taskContent);
-
                     if (p.find()) {
                         String position = p.group();
                         int i = position.indexOf("(");
@@ -68,18 +75,38 @@ public class DumpDataServiceImpl implements IDumpDataService {
 
                             try {
                                 String[] xy = x_y.split(",");
-                                Integer.parseInt(xy[0]);
-                                Integer.parseInt(xy[1]);
+                                int x = Integer.parseInt(xy[0]);
+                                int y = Integer.parseInt(xy[1]);
+                                taskBean.initNpcXY(x, y);
                             } catch (Exception e) {
                                 logger.error("异常：数据转换失败：{}", e.getMessage());
                             }
+                            taskBean.initNpcTargetMapName(city);
                         }
                     }
+                    Matcher taskNpcNameMatcher = DataSplitConstant.TASK_DECOMPOSITION_NAME.matcher(taskContent);
+                    if (taskNpcNameMatcher.find()) {
+                        String npcName = taskNpcNameMatcher.group();
+                        taskBean.initNpcName(npcName);
+
+                        logger.info("任务注册：{}", npcName);
+                    }
+                    taskDataManager.registerTaskBean(taskBean);
 
                 } else {
                     logger.info("未知的任务：{}", taskContent);
                 }
-
+            }
+        } else {
+            // 这个是去地图查找所有的NPC地址信息
+            Matcher detailNpc = DataSplitConstant.MAP_NPC_PATTERN.matcher(gbk);
+            while (detailNpc.find()) {
+                String npcDetail = detailNpc.group();
+                if (taskDataManager.complementTask(npcDetail)) {
+                    // 补充完成一个任务就可以了
+                    logger.info("补充任务注册信息：{}", npcDetail);
+                    break;
+                }
             }
         }
     }

@@ -2,7 +2,10 @@ package com.mhxh.proxyer.fake;
 
 import com.mhxh.proxyer.fake.command.base.IFormatCommand;
 import com.mhxh.proxyer.fake.command.local.*;
+import com.mhxh.proxyer.fake.command.remote.refuse.RefuseCatchGhostInfoPopupCommand;
+import com.mhxh.proxyer.fake.command.remote.refuse.RefuseCatchGhostPopupCommand;
 import com.mhxh.proxyer.fake.command.remote.refuse.RefuseFlagPopupCommand;
+import com.mhxh.proxyer.fake.command.remote.refuse.RefuseTaskListPopupCommand;
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendCommandRuleConstants;
 import com.mhxh.proxyer.tcp.game.constants.MapConstants;
@@ -56,6 +59,27 @@ public class FakeCommandRegisterFactory {
         useBoxItemCommand.addRefuseFilter(RefuseFlagPopupCommand.createInstance(exchanger));
         taskQueue.offer(useBoxItemCommand);
         taskQueue.offer(new UseFlyFlagToMapDestinationSayYesCommand(mapId));
+        exchanger.addFakeCommand(taskQueue);
+    }
+
+    public void registerCatchGhost() {
+        Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+        // 先飞长安城
+        taskQueue.offer(new UseFlyItemFlayToMapCommand(LocalSendCommandRuleConstants.USE_ITEM_FLY_TO_MAP_GKB, "2"));
+        taskQueue.offer(new ChangAnNpcFlyToSectCommand("阴曹地府"));
+        // 领任务
+        RequestCatchGhostCommand requestCatchGhostCommand = new RequestCatchGhostCommand();
+        requestCatchGhostCommand.addRefuseFilter(RefuseCatchGhostPopupCommand.createInstance(exchanger));
+        taskQueue.offer(requestCatchGhostCommand);
+        // 确定任务
+        RequestCatchGhostForSureCommand requestCatchGhostForSureCommand = new RequestCatchGhostForSureCommand();
+        requestCatchGhostForSureCommand.addRefuseFilter(RefuseCatchGhostInfoPopupCommand.createInstance(exchanger));
+        taskQueue.offer(requestCatchGhostForSureCommand);
+        // 查询任务
+        QueryTaskListCommand queryTaskListCommand = new QueryTaskListCommand();
+        queryTaskListCommand.addRefuseFilter(RefuseTaskListPopupCommand.createInstance(exchanger));
+        taskQueue.offer(queryTaskListCommand);
+
         exchanger.addFakeCommand(taskQueue);
     }
 }

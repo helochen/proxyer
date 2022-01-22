@@ -47,7 +47,7 @@ public class LocalSendCommandRuleConstants {
 
     /**
      * 使用道具后会有个无名的操作,应该是通知服务器刷新之类的，毕竟数据发生变动
-     *
+     * <p>
      * 2022-01-16 这个是打开背包的协议
      */
     public static final String USE_ITEM_FORMAT_GBK_APPEND = "3699*-*do local ret={[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
@@ -69,4 +69,41 @@ public class LocalSendCommandRuleConstants {
      * 行走过程
      */
     public static final String ROLE_WALKING_GBK = "1002*-*do local ret={[\"x\"]=%s,[\"方向\"]=1,[\"类型\"]=\"行走\",[\"y\"]=%s,[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+
+    /**
+     * 请求任务
+     */
+    public static final String ROLE_REQUEST_TASK_LIST = "10*-*do local ret={[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+
+    /**
+     * 点击鬼的请求任务
+     */
+    public static final String CATCH_GHOST_NPC_REQUSET_BEGIN_SEND_COMMAND_CONTENT_GBK = "1501*-*do local ret={[\"时间\"]=%s,[\"数据验证\"]=\"%s\",[\"地图\"]=%s,[\"编号\"]=%s,[\"序列\"]=%s,[\"标识\"]=\"%s\"} return ret end";
+
+
+    /**
+     * 开干鬼的命令
+     */
+    public static final String CATCH_GHOST_NPC_REQUEST_FIGHT_COMMAND_CONTENT_GBK = "1502*-*do local ret={[1]=\"回你的地狱去\",[2]=%s,[3]=\"%s\",[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+
+    /**
+     * 进入战斗后有个请求,未知
+     */
+    public static final String CATCH_GHOST_AFTER_FIGHT_UNKNOWN_COMMEND_CONTENT_GBK = "5501*-*do local ret={[\"时间\"]=%s,[\"数据验证\"]=\"%s\"}";
+
+    /**
+     * 送回地府
+     */
+    public static final String GO_BACK_TO_UNDER_GROUND_CONTENT_GBK = "1502*-*do local ret={[1]=\"请送我回阴曹地府\",[2]=%s,[3]=\"钟馗\",[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+
+
+    /**
+     * 请求抓鬼命令
+     */
+    public static final String GET_CATCH_GHOST_COMMAND_CONTENT_GBK = "1501*-*do local ret={[\"数据验证\"]=\"%s\",[\"地图\"]=1122,[\"编号\"]=1,[\"时间\"]=%s,[\"序列\"]=1} return ret end";
+
+    /**
+     * 确认任务
+     */
+    public static final String CATCH_GHOST_TASK_FOR_SURE = "1502*-*do local ret={[1]=\"好的 我帮你\",[2]=1122,[3]=\"钟馗\",[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
 }

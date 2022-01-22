@@ -26,6 +26,7 @@ public class MapConstants {
         MAP_CN_TO_CODE.put("傲来国", MAP_ID_AL);
         MAP_CN_TO_CODE.put("朱紫国", MAP_ID_ZZG);
         MAP_CN_TO_CODE.put("宝象国", MAP_ID_BX);
+        MAP_CN_TO_CODE.put("大唐境外", MAP_ID_DTJW);
 
 
         CODE_TO_SERIAL_NO.put(MAP_ID_ZZG, "8");
@@ -70,8 +71,11 @@ public class MapConstants {
      */
     private static final String MAP_ID_ZZG = "1208";
 
+    /**
+     * 大唐境外 1173
+     */
 
-
+    private static final String MAP_ID_DTJW = "1173";
 
 
 

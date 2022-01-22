@@ -39,4 +39,14 @@ public class LocalCommandQueueController {
         registerWaitCommandService.useFlagFlyToMap(itemIdx, mapId);
         return "success";
     }
+
+    /**
+     * 走门派飞向抓鬼
+     * @return
+     */
+    @RequestMapping("catch-ghost")
+    public String catchGhost() {
+        registerWaitCommandService.catchGhost();
+        return "success";
+    }
 }

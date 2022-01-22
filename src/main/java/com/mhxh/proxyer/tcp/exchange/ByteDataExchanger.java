@@ -6,6 +6,8 @@ import com.mhxh.proxyer.tcp.service.IDumpDataService;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -23,7 +25,7 @@ import java.util.concurrent.Executor;
 
 @Component
 public class ByteDataExchanger {
-
+    private static final Logger logger = LoggerFactory.getLogger(ByteDataExchanger.class);
     /**
      * 增加一个命令列表，每一个命令都是由一系列命令构成
      */

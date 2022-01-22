@@ -8,7 +8,7 @@ public interface IRefuseFilter extends IType {
     /**
      *  拒绝消息
      */
-    Boolean refuse(ByteBuf srcCmd);
+    boolean refuse(ByteBuf srcCmd);
 
     /**
      * 增加一次

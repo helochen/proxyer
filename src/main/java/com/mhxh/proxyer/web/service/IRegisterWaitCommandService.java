@@ -9,4 +9,6 @@ public interface IRegisterWaitCommandService {
     void flyToJiangNanMap();
 
     void useFlagFlyToMap(String itemIdx, String mapId);
+
+    void catchGhost();
 }
