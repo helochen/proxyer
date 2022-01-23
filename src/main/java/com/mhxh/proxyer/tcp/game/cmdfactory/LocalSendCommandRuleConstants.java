@@ -62,13 +62,15 @@ public class LocalSendCommandRuleConstants {
     /**
      * 行走地图,目的地
      */
-    public static final String ROLE_WALK_TO_DESTINATION_GBK = "1001*-*do local ret={[\"y\"]=%s,[\"x\"]=%y,[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+    public static final String ROLE_WALK_TO_DESTINATION_GBK = "1001*-*do local ret={[\"y\"]=%s,[\"x\"]=%s,[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
 
 
     /**
      * 行走过程
      */
-    public static final String ROLE_WALKING_GBK = "1002*-*do local ret={[\"x\"]=%s,[\"方向\"]=1,[\"类型\"]=\"行走\",[\"y\"]=%s,[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+    public static final String ROLE_WALKING_RUNNING_GBK = "1002*-*do local ret={[\"x\"]=%s,[\"方向\"]=1,[\"类型\"]=\"行走\",[\"y\"]=%s,[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+
+    public static final String ROLE_WALKING_STOPPING_GBK = "1002*-*do local ret={[\"x\"]=%s,[\"方向\"]=1,[\"类型\"]=\"停止\",[\"y\"]=%s,[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
 
     /**
      * 请求任务
@@ -78,7 +80,7 @@ public class LocalSendCommandRuleConstants {
     /**
      * 点击鬼的请求任务
      */
-    public static final String CATCH_GHOST_NPC_REQUSET_BEGIN_SEND_COMMAND_CONTENT_GBK = "1501*-*do local ret={[\"时间\"]=%s,[\"数据验证\"]=\"%s\",[\"地图\"]=%s,[\"编号\"]=%s,[\"序列\"]=%s,[\"标识\"]=\"%s\"} return ret end";
+    public static final String CATCH_GHOST_NPC_REQUSET_BEGIN_SEND_COMMAND_CONTENT_GBK = "1501*-*do local ret={[\"时间\"]=%s,[\"数据验证\"]=\"%s\",[\"地图\"]=%s,[\"编号\"]=%s,[\"序列\"]=%s,[\"标识\"]=%s} return ret end";
 
 
     /**
@@ -105,5 +107,15 @@ public class LocalSendCommandRuleConstants {
     /**
      * 确认任务
      */
-    public static final String CATCH_GHOST_TASK_FOR_SURE = "1502*-*do local ret={[1]=\"好的 我帮你\",[2]=1122,[3]=\"钟馗\",[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+    public static final String CATCH_GHOST_TASK_FOR_SURE_CONTENT_GBK = "1502*-*do local ret={[1]=\"好的 我帮你\",[2]=1122,[3]=\"钟馗\",[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+
+    /**
+     * 飞往江南野外
+     */
+    public static final String NPC_SEND_TO_JIANGNAN_MAP_CONTENT_GBK = "1502*-*do local ret={[1]=\"传送江南野外\",[2]=1501,[3]=\"建邺守卫\",[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+
+    /**
+     * 飞往大唐国境的地图旗子的请求数据
+     */
+    public static final String MULTI_GUOJING_FLAG_FLY_TO_CONTENT_GBK = "3737*-*do local ret={[\"时间\"]=%s,[\"序列\"]=3,[\"数据验证\"]=\"%s\"} return ret end";
 }

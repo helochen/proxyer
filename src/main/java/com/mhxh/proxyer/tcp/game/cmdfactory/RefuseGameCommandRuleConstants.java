@@ -37,4 +37,29 @@ public class RefuseGameCommandRuleConstants {
      */
     private static final String REFUSE_CMD_CATCH_GHOST_INFORMATION_CONTENT_GBK = "请立即前去降服";
     public static final byte[] REFUSE_CMD_CATCH_GHOST_INFORMATION_CONTENT_BYTES = REFUSE_CMD_CATCH_GHOST_INFORMATION_CONTENT_GBK.getBytes(Charset.forName("GBK"));
+
+    /**
+     * 拒绝境外旗子弹窗的功能
+     */
+    private static final String REFUSE_CMD_JINGWAI_FLAG_POPUP_CONTENT_GBK = "序号=3529,内容={地图=1173";
+    public static final byte[] REFUSE_CMD_JINGWAI_FLAG_POPUP_CONTENT_BYTES = REFUSE_CMD_JINGWAI_FLAG_POPUP_CONTENT_GBK.getBytes(Charset.forName("GBK"));
+
+
+    /**
+     * 拒绝与鬼聊天的弹窗功能
+     */
+    private static final String REFUSE_TALK_WITH_GHOST_POPUP_CONTENT_GBK = "悄悄地告诉你，其实我是从地狱里偷跑出来的";
+    public static final byte[] REFUSE_TALK_WITH_GHOST_POPUP_CONTENT_BYTES = REFUSE_TALK_WITH_GHOST_POPUP_CONTENT_GBK.getBytes(Charset.forName("GBK"));
+
+    /**
+     * 拒绝飞行符的弹窗
+     */
+    private static final String REFUSE_FLY_CONTENT_POPUP_CONTENT_GBK = "{序号=13,内容=\"1\"}";
+    public static final byte[] REFUSE_FLY_CONTENT_POPUP_CONTENT_BYTES = REFUSE_FLY_CONTENT_POPUP_CONTENT_GBK.getBytes(Charset.forName("GBK"));
+
+    /**
+     * 继续抓鬼的避免弹窗功能
+     */
+    private static final String REFUSE_CONTINUE_CATCH_GHOST_POPUP_CONTENT_GBK = "少侠干得不错哟，如果你愿意继续协助我捉拿这些小鬼";
+    public static final byte[] REFUSE_CONTINUE_CATCH_GHOST_POPUP_CONTENT_BYTES = REFUSE_CONTINUE_CATCH_GHOST_POPUP_CONTENT_GBK.getBytes(Charset.forName("GBK"));
 }

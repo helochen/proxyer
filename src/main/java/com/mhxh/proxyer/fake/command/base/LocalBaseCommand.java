@@ -29,6 +29,11 @@ public abstract class LocalBaseCommand extends BaseCommand implements IType {
     }
 
     @Override
+    public String format() {
+        return this.format(getTime() ,getVerify());
+    }
+
+    @Override
     public int type() {
         return 1;
     }

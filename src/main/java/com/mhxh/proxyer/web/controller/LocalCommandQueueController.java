@@ -49,4 +49,13 @@ public class LocalCommandQueueController {
         registerWaitCommandService.catchGhost();
         return "success";
     }
+
+    /**
+     * 测试下移动功能
+     */
+    @RequestMapping("move-to")
+    public String moveTo(@RequestParam("x")int x , @RequestParam("y")int y) {
+        registerWaitCommandService.moveTo(x, y);
+        return "success";
+    }
 }

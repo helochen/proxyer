@@ -5,6 +5,7 @@ import com.mhxh.proxyer.tcp.game.constants.DataSplitConstant;
 import com.mhxh.proxyer.tcp.game.task.ITaskBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Iterator;
@@ -18,11 +19,13 @@ public class TaskDataManager {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskDataManager.class);
 
+    @Autowired
+    private ByteDataExchanger exchanger;
+
     /**
      * 当前任务（抓鬼、初出江湖等）的对象管理器
      */
     private final Queue<ITaskBean> roleTasks = new ConcurrentLinkedDeque<>();
-
 
 
     /**
@@ -40,10 +43,13 @@ public class TaskDataManager {
             }
         }
         roleTasks.offer(taskBean);
+        // 产生任务对象
+        exchanger.registerChangeMapFakeCommand(taskBean.getMapName());
     }
 
     /**
      * 把任务信息进行填充
+     *
      * @param npcDetail
      * @return
      */
@@ -61,8 +67,15 @@ public class TaskDataManager {
                     String mapId = holder.getOrDefault("地图", "");
                     String id = holder.getOrDefault("id", "");
                     String serialNo = holder.getOrDefault("编号", "");
-                    next.setSerialNo(serialNo)
+                    int x = Integer.parseInt(holder.getOrDefault("x", "10"));
+                    int y = Integer.parseInt(holder.getOrDefault("y", "10"));
+
+                    next.initNpcXY(x, y).setSerialNo(serialNo)
                             .setId(id).setMapId(mapId);
+
+                    exchanger.registerFightWithNpcCommand(next);
+                    iterator.remove();
+
                     return true;
                 } catch (Exception ex) {
                     logger.error("{}, {}", npcDetail, ex.getMessage());

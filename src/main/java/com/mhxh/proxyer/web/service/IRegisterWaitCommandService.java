@@ -11,4 +11,6 @@ public interface IRegisterWaitCommandService {
     void useFlagFlyToMap(String itemIdx, String mapId);
 
     void catchGhost();
+
+    void moveTo(int x, int y);
 }

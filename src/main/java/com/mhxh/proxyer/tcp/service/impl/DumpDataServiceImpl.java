@@ -89,7 +89,7 @@ public class DumpDataServiceImpl implements IDumpDataService {
                         String npcName = taskNpcNameMatcher.group();
                         taskBean.initNpcName(npcName);
 
-                        logger.info("任务注册：{}", npcName);
+                        logger.info("任务注册：{}->{}", taskBean.getMapName(), npcName);
                     }
                     taskDataManager.registerTaskBean(taskBean);
 

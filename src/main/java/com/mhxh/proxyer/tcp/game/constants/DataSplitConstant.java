@@ -1,7 +1,9 @@
 package com.mhxh.proxyer.tcp.game.constants;
 
+import com.google.common.base.Splitter;
 import io.netty.buffer.ByteBufUtil;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class DataSplitConstant {
@@ -21,9 +23,9 @@ public class DataSplitConstant {
     public static final Pattern TASK_DECOMPOSITION_X_Y = Pattern.compile("(.*?)");
 
     public static void main(String[] args) {
-        String content = "{x=31,名称=\"申时三刻抠掏鬼\",y=22,事件=\"单位\",显示饰品=false,变异=false,领取人id={[1]=4000562,[2]=4000563,[3]=4000564},id=\"4000562_8_1642838721_744_39756873\",编号=1000,模型=\"骷髅怪\",地图=1193}";
+        String content = "{x=31,名称=\"申时三刻抠掏鬼\",y=22,事件=\"单位\",显示饰品=false,变异=false,id=\"4000562_8_1642838721_744_39756873\",编号=1000,模型=\"骷髅怪\",地图=1193}";
 
-
+        Map<String, String> holder = Splitter.on(",").trimResults().withKeyValueSeparator("=").split(content.replaceAll("\\{", "").replaceAll("}", ""));
 
         String m = "3a3700000000500000000000" +
                 "646f206c6f63616c207265743d7bd0f2bac53d313030352cc4dac8dd3d7b5b315d3d313139332c5b325d3d32302c5b335d3d377d7d2072657475726e2072657420656e64";

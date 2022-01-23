@@ -12,15 +12,13 @@ import javax.annotation.Resource;
 @Service
 public class RegisterWaitCommandServiceImpl implements IRegisterWaitCommandService {
 
-    @Resource
-    private MapConstants mapConstants;
 
     @Resource
     private FakeCommandRegisterFactory registerFactory;
 
     @Override
     public void flyToMap(String mapId) {
-        String serialNo = mapConstants.CODE_TO_SERIAL_NO.get(mapId);
+        String serialNo = MapConstants.NAME_TO_SERIAL_NO.get(mapId);
 
         if (StringUtils.hasText(serialNo)) {
             registerFactory.registerFlyTicketItemFlyToMap(serialNo);
@@ -29,7 +27,7 @@ public class RegisterWaitCommandServiceImpl implements IRegisterWaitCommandServi
 
     @Override
     public void flyToSect(String sect) {
-        String serialNo = mapConstants.CODE_TO_SERIAL_NO.get("1001");
+        String serialNo = MapConstants.NAME_TO_SERIAL_NO.get("1001");
         if (StringUtils.hasText(sect) && StringUtils.hasText(serialNo)) {
             registerFactory.registerFlyToSectByName(serialNo, sect);
         }
@@ -48,5 +46,10 @@ public class RegisterWaitCommandServiceImpl implements IRegisterWaitCommandServi
     @Override
     public void catchGhost() {
         registerFactory.registerCatchGhost();
+    }
+
+    @Override
+    public void moveTo(int x, int y) {
+        registerFactory.registerMoveTo(x, y);
     }
 }
