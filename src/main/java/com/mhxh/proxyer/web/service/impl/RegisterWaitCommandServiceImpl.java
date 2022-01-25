@@ -52,4 +52,9 @@ public class RegisterWaitCommandServiceImpl implements IRegisterWaitCommandServi
     public void moveTo(int x, int y) {
         registerFactory.registerMoveTo(x, y);
     }
+
+    @Override
+    public void buyFlyTicket(int num) {
+        registerFactory.registerBuyFlyTicket(num);
+    }
 }

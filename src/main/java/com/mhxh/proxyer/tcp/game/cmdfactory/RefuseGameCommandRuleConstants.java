@@ -62,4 +62,10 @@ public class RefuseGameCommandRuleConstants {
      */
     private static final String REFUSE_CONTINUE_CATCH_GHOST_POPUP_CONTENT_GBK = "少侠干得不错哟，如果你愿意继续协助我捉拿这些小鬼";
     public static final byte[] REFUSE_CONTINUE_CATCH_GHOST_POPUP_CONTENT_BYTES = REFUSE_CONTINUE_CATCH_GHOST_POPUP_CONTENT_GBK.getBytes(Charset.forName("GBK"));
+
+    /**
+     * 拒绝技能弹窗
+     */
+    private static final String REFUSE_XIANLING_DIANPU_POPUP_CONTENT_GBK = "名称=\"仙灵店铺\"";
+    public static final byte[] REFUSE_XIANLING_DIANPU_POPUP_CONTENT_BYTES = REFUSE_XIANLING_DIANPU_POPUP_CONTENT_GBK.getBytes(Charset.forName("GBK"));
 }

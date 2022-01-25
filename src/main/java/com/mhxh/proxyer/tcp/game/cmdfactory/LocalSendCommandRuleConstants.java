@@ -118,4 +118,15 @@ public class LocalSendCommandRuleConstants {
      * 飞往大唐国境的地图旗子的请求数据
      */
     public static final String MULTI_GUOJING_FLAG_FLY_TO_CONTENT_GBK = "3737*-*do local ret={[\"时间\"]=%s,[\"序列\"]=3,[\"数据验证\"]=\"%s\"} return ret end";
+
+    /**
+     * 拉去店铺技能列表
+     */
+    public static final String FAST_USE_SKILL_TO_XIANLING_DIANPU_CONTENT_GBK = "13*-*do local ret={[\"时间\"]=%s,[\"序列\"]=2,[\"数据验证\"]=\"%s\"} return ret end";
+
+    /**
+     * 购买飞行棋
+     */
+    public static final String BUY_FLY_TICKET_ITEM_CONTENT_GBK = "1503*-*do local ret={[\"数量\"]=\"%s\",[\"数据验证\"]=\"%s\",[\"时间\"]=%s,[\"商品\"]=\"飞行符*750\",[\"类型\"]=\"银子\"} return ret end";
+
 }

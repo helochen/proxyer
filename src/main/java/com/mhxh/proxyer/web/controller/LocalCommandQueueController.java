@@ -58,4 +58,13 @@ public class LocalCommandQueueController {
         registerWaitCommandService.moveTo(x, y);
         return "success";
     }
+
+    /**
+     * 测试购买物品
+     */
+    @RequestMapping("buy-fly")
+    public String buyFlyTicket(@RequestParam("num") int num) {
+        registerWaitCommandService.buyFlyTicket(num);
+        return "success";
+    }
 }

@@ -13,4 +13,6 @@ public interface IRegisterWaitCommandService {
     void catchGhost();
 
     void moveTo(int x, int y);
+
+    void buyFlyTicket(int num);
 }

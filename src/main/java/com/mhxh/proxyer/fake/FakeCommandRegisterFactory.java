@@ -77,6 +77,11 @@ public class FakeCommandRegisterFactory {
         QueryTaskListCommand queryTaskListCommand = new QueryTaskListCommand();
         queryTaskListCommand.addRefuseFilter(RefuseTaskListPopupCommand.createInstance(exchanger));
         taskQueue.offer(queryTaskListCommand);
+        // 补充飞行符
+        FastUseSkillToXianlingDianpuCommand buyFlyTicketCommand = new FastUseSkillToXianlingDianpuCommand();
+        buyFlyTicketCommand.addRefuseFilter(RefuseSkillXianLingDianpuPoppupCommand.createInstance(exchanger));
+        taskQueue.offer(buyFlyTicketCommand);
+        taskQueue.offer(new BuyFlyTicketItemCommand(1));
 
         exchanger.addFakeCommand(taskQueue);
     }
@@ -88,6 +93,12 @@ public class FakeCommandRegisterFactory {
         taskQueue.offer(new RoleMoveToTargetCommand(x, y));
         taskQueue.offer(new RoleWalkingRunningCommand(x, y));
         taskQueue.offer(new RoleWalkingStopCommand(x, y));
+        exchanger.addFakeCommand(taskQueue);
+    }
+
+    public void registerBuyFlyTicket(int num) {
+        Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+        taskQueue.offer(new BuyFlyTicketItemCommand(num));
         exchanger.addFakeCommand(taskQueue);
     }
 }
