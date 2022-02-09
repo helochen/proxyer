@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class ByteDataExchanger {
@@ -249,6 +250,8 @@ public class ByteDataExchanger {
 
     }
 
+    private AtomicInteger count = new AtomicInteger(1);
+
     /**
      * 发送事件对象
      *
@@ -258,7 +261,8 @@ public class ByteDataExchanger {
         switch (eventCatchGhost) {
             case EVENT_CATCH_GHOST:
                 //eventPublisher.publishEvent(new CatchGhostEvent(this));
-                logger.info("任务注册：请求抓鬼任务");
+                int val = count.incrementAndGet();
+                logger.info("任务注册：请求抓鬼任务,第{}次", val);
                 factory.registerCatchGhost();
                 break;
             default:
