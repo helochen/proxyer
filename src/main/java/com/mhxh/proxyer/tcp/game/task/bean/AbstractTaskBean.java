@@ -4,6 +4,7 @@ import com.mhxh.proxyer.tcp.game.task.ITaskBean;
 
 public abstract class AbstractTaskBean implements ITaskBean {
 
+    protected int taskType = 0;
     /**
      * 地图的中文名
      */
@@ -109,5 +110,10 @@ public abstract class AbstractTaskBean implements ITaskBean {
     @Override
     public int getY() {
         return xy[1];
+    }
+
+    @Override
+    public int getTaskType() {
+        return taskType;
     }
 }

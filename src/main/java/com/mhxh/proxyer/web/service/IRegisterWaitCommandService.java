@@ -15,4 +15,8 @@ public interface IRegisterWaitCommandService {
     void moveTo(int x, int y);
 
     void buyFlyTicket(int num);
+
+    void finishQinglongTask();
+
+    void getQinglongTask();
 }

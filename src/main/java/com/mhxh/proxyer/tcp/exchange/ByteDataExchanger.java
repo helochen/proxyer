@@ -269,4 +269,23 @@ public class ByteDataExchanger {
                 break;
         }
     }
+
+    public void registerFinishQinglongTaskItem(ITaskBean taskBean) {
+
+        // 购买物品
+        Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+        taskQueue.offer(new BuySystemItemCommand(taskBean.getX(), taskBean.getY()));
+
+        // 请求提交物品
+        taskQueue.offer(new RequestCommitQinglongBuyItemCommand());
+        // 提交物品
+        taskQueue.offer(new ResponseQingLongTaskItemCommand(1));
+
+        // 继续领取任务
+        RequestQinglongTaskInfoCommand requestQinglongTaskInfoCommand = new RequestQinglongTaskInfoCommand();
+        requestQinglongTaskInfoCommand.addRefuseFilter(RefuseQingLongTaskPopupCommand.createInstance(this));
+        taskQueue.offer(requestQinglongTaskInfoCommand);
+
+        this.addFakeCommand(taskQueue);
+    }
 }

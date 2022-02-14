@@ -58,11 +58,11 @@ public class DumpDataServiceImpl implements IDumpDataService {
         /**
          * 看看是不是任务信息
          */
-        if (gbk.contains(TaskConstants.TASK_JIAN_HU) || gbk.contains(TaskConstants.TASK_CATCH_GHOST)) {
+        if (gbk.contains(TaskConstants.TASK_JIANG_HU) || gbk.contains(TaskConstants.TASK_CATCH_GHOST)) {
             Matcher tasksFind = DataSplitConstant.DATA_PATTERN.matcher(gbk);
             while (tasksFind.find()) {
                 String taskContent = tasksFind.group();
-                if (taskContent.contains(TaskConstants.TASK_CATCH_GHOST) || taskContent.contains(TaskConstants.TASK_JIAN_HU)) {
+                if (taskContent.contains(TaskConstants.TASK_CATCH_GHOST) || taskContent.contains(TaskConstants.TASK_JIANG_HU)) {
                     ITaskBean taskBean = TaskBeanCreateFactory.createTaskBean(TaskConstants.TASK_CATCH_GHOST, taskContent);
                     // 地图位置，地图坐标
                     Matcher p = DataSplitConstant.TASK_DECOMPOSITION_POSTION.matcher(taskContent);
@@ -96,6 +96,12 @@ public class DumpDataServiceImpl implements IDumpDataService {
                 } else {
                     logger.info("未知的任务：{}", taskContent);
                 }
+            }
+        } else if(gbk.contains(TaskConstants.TASK_QING_LONG)){
+            Matcher tasksFind = DataSplitConstant.TASK_QING_LONG_NEED_ITEM.matcher(gbk);
+            while (tasksFind.find()) {
+                ITaskBean taskBean = TaskBeanCreateFactory.createTaskBean(TaskConstants.TASK_QING_LONG, tasksFind.group());
+                taskDataManager.registerTaskBean(taskBean);
             }
         } else {
             // 这个是去地图查找所有的NPC地址信息

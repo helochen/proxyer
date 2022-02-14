@@ -2,6 +2,7 @@ package com.mhxh.proxyer.tcp.game.task;
 
 import com.mhxh.proxyer.tcp.game.constants.TaskConstants;
 import com.mhxh.proxyer.tcp.game.task.bean.DestroyTempNpcTaskBean;
+import com.mhxh.proxyer.tcp.game.task.bean.QinglongTaskBean;
 
 public class TaskBeanCreateFactory {
 
@@ -16,8 +17,12 @@ public class TaskBeanCreateFactory {
         ITaskBean bean = null;
         switch (type) {
             case TaskConstants.TASK_CATCH_GHOST:
-            case TaskConstants.TASK_JIAN_HU:
+            case TaskConstants.TASK_JIANG_HU:
                 bean = new DestroyTempNpcTaskBean();
+                break;
+            case TaskConstants.TASK_QING_LONG:
+                bean = new QinglongTaskBean(content);
+                break;
                 default:
         }
         return bean;

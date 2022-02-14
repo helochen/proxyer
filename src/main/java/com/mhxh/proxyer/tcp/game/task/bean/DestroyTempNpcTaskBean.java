@@ -9,5 +9,8 @@ import com.mhxh.proxyer.tcp.game.task.ITaskBean;
  */
 public class DestroyTempNpcTaskBean extends AbstractTaskBean implements ITaskBean {
 
-
+    public DestroyTempNpcTaskBean() {
+        super();
+        this.taskType = 2;
+    }
 }

@@ -101,4 +101,18 @@ public class FakeCommandRegisterFactory {
         taskQueue.offer(new BuyFlyTicketItemCommand(num));
         exchanger.addFakeCommand(taskQueue);
     }
+
+    public void registerFinishQinglongTask() {
+        Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+        taskQueue.offer(new RequestCommitQinglongBuyItemCommand());
+        taskQueue.offer(new ResponseQingLongTaskItemCommand(1));
+        exchanger.addFakeCommand(taskQueue);
+    }
+
+
+    public void registerGetQinglongTask() {
+        Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+        taskQueue.offer(new RequestQinglongTaskInfoCommand());
+        exchanger.addFakeCommand(taskQueue);
+    }
 }

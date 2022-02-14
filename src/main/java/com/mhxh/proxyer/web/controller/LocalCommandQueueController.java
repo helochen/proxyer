@@ -67,4 +67,23 @@ public class LocalCommandQueueController {
         registerWaitCommandService.buyFlyTicket(num);
         return "success";
     }
+
+    /**
+     * 测试提交物品
+     */
+    @RequestMapping("finish-ql")
+    public String finishQingLong() {
+        registerWaitCommandService.finishQinglongTask();
+        return "success";
+    }
+
+    /**
+     * 领取青龙任务
+     */
+    @RequestMapping("get-ql")
+    public String getQinglongTask() {
+        registerWaitCommandService.getQinglongTask();
+        return "success";
+    }
+
 }

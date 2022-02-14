@@ -4,6 +4,7 @@ import com.google.common.base.Splitter;
 import io.netty.buffer.ByteBufUtil;
 
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DataSplitConstant {
@@ -22,7 +23,18 @@ public class DataSplitConstant {
 
     public static final Pattern TASK_DECOMPOSITION_X_Y = Pattern.compile("(.*?)");
 
+    // 青龙堂任务
+    public static final Pattern TASK_QING_LONG_NEED_ITEM = Pattern.compile("(?<=#Y).*?(?=#W)");
+
     public static void main(String[] args) {
+
+        String qinglong = "do local ret={序号=1501,内容={模型=\"剑侠客\",对话=\"听闻帮派青龙堂的青龙堂主管正在四处搜寻#Y麝香#W，请你帮他寻找一个吧。\",名称=\"青龙堂主管\"}} return ret end";
+        Matcher tasksFind = DataSplitConstant.TASK_QING_LONG_NEED_ITEM.matcher(qinglong);
+        while (tasksFind.find()) {
+            System.out.println(tasksFind.group());
+        }
+
+
         String content = "{x=31,名称=\"申时三刻抠掏鬼\",y=22,事件=\"单位\",显示饰品=false,变异=false,id=\"4000562_8_1642838721_744_39756873\",编号=1000,模型=\"骷髅怪\",地图=1193}";
 
         Map<String, String> holder = Splitter.on(",").trimResults().withKeyValueSeparator("=").split(content.replaceAll("\\{", "").replaceAll("}", ""));
