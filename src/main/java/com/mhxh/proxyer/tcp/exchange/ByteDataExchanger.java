@@ -244,6 +244,9 @@ public class ByteDataExchanger {
             taskQueue.offer(new RoleWalkingRunningCommand(next.getX(), next.getY()));
             taskQueue.offer(new RoleWalkingStopCommand(next.getX(), next.getY()));
 
+            // 直接先买个FF
+            this.buyFlyTicketFunction(1, taskQueue);
+
             // 与鬼战斗，以及进制弹窗功能
             RoleRequestGhostFightCommand ghostFightCommand = new RoleRequestGhostFightCommand(mapId, serialNo, id);
             ghostFightCommand.addRefuseFilter(RefuseFightWithGhostPopupCommand.createInstance(this));
