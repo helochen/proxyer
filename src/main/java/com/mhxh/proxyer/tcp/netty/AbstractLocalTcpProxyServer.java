@@ -52,7 +52,8 @@ public abstract class AbstractLocalTcpProxyServer extends AbstractIdleService {
     protected void startUp() throws InterruptedException {
         serverBootstrap.group(bossGroup, workGroup).channel(NioServerSocketChannel.class)
                 .childOption(ChannelOption.SO_KEEPALIVE, true).childOption(ChannelOption.TCP_NODELAY, true)
-                .childHandler(channelHandlers()).bind(socketAddress).sync().channel().closeFuture().addListener(ChannelFutureListener.CLOSE);
+                .childHandler(channelHandlers()).bind(socketAddress).sync().channel().closeFuture().addListener(ChannelFutureListener.CLOSE)
+        .addListener((ChannelFutureListener) channelFuture -> logger.error("游戏客户端TCP链接断开..."));
 
     }
 

@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class ByteDataExchanger {
@@ -167,32 +168,36 @@ public class ByteDataExchanger {
     public void registerChangeMapFakeCommand(String mapName) {
 
         Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
-        int buyTicket = 0;
         if (MapConstants.MAP_CN_TO_CODE.containsKey(mapName)) {
             String serialNo = MapConstants.NAME_TO_SERIAL_NO.get(mapName);
             if (StringUtils.hasText(serialNo)) {
+                this.buyFlyTicketFunction(1, taskQueue);
                 UseBoxItemCommand useBoxItemCommand = new UseBoxItemCommand("1");
                 useBoxItemCommand.addRefuseFilter(RefuseFlyTicketPopupCommand.createInstance(this));
                 taskQueue.offer(new UseFlyItemFlayToMapCommand(LocalSendCommandRuleConstants.USE_ITEM_FLY_TO_MAP_GKB, serialNo));
                 taskQueue.offer(new UseItemFlushCommand());
-                ++buyTicket;
+
             }
         } else if (SectMapConstants.SECT_NAMES.contains(mapName)) {
+            this.buyFlyTicketFunction(1, taskQueue);
+
             UseBoxItemCommand useBoxItemCommand = new UseBoxItemCommand("1");
             useBoxItemCommand.addRefuseFilter(RefuseFlyTicketPopupCommand.createInstance(this));
             taskQueue.offer(useBoxItemCommand);
             taskQueue.offer(new UseFlyItemFlayToMapCommand(LocalSendCommandRuleConstants.USE_ITEM_FLY_TO_MAP_GKB, "2"));
             taskQueue.offer(new UseItemFlushCommand());
             taskQueue.offer(new ChangAnNpcFlyToSectCommand(mapName));
-            ++buyTicket;
+
         } else if ("江南野外".equals(mapName)) {
+            this.buyFlyTicketFunction(1, taskQueue);
+
             UseBoxItemCommand useBoxItemCommand = new UseBoxItemCommand("1");
             useBoxItemCommand.addRefuseFilter(RefuseFlyTicketPopupCommand.createInstance(this));
             taskQueue.offer(useBoxItemCommand);
             taskQueue.offer(new UseFlyItemFlayToMapCommand(LocalSendCommandRuleConstants.USE_ITEM_FLY_TO_MAP_GKB, "3"));
             taskQueue.offer(new UseItemFlushCommand());
             taskQueue.offer(new UseNpcFlyToJiangNanMapCommand());
-            ++buyTicket;
+
         } else if ("大唐境外".equals(mapName)) {
             UseBoxItemCommand useBoxItemCommand = new UseBoxItemCommand("16");
             useBoxItemCommand.addRefuseFilter(RefuseCmdJingwaiFlagPopupCommand.createInstance(this));
@@ -202,17 +207,19 @@ public class ByteDataExchanger {
         } else {
             logger.error("未处理的地图位置:{}", mapName);
         }
-        if (buyTicket > 0) {
-            FastUseSkillToXianlingDianpuCommand buyFlyTicketCommand = new FastUseSkillToXianlingDianpuCommand();
-            buyFlyTicketCommand.addRefuseFilter(RefuseSkillXianLingDianpuPoppupCommand.createInstance(this));
-            taskQueue.offer(buyFlyTicketCommand);
-            taskQueue.offer(new BuyFlyTicketItemCommand(buyTicket));
-        }
 
         if (!CollectionUtils.isEmpty(taskQueue)) {
             this.addFakeCommand(taskQueue);
         }
+    }
 
+    private void buyFlyTicketFunction(int num, Queue<IFormatCommand> taskQueue) {
+        if (num > 0) {
+            FastUseSkillToXianlingDianpuCommand buyFlyTicketCommand = new FastUseSkillToXianlingDianpuCommand();
+            buyFlyTicketCommand.addRefuseFilter(RefuseSkillXianLingDianpuPoppupCommand.createInstance(this));
+            taskQueue.offer(buyFlyTicketCommand);
+            taskQueue.offer(new BuyFlyTicketItemCommand(num));
+        }
 
     }
 
@@ -249,6 +256,8 @@ public class ByteDataExchanger {
 
     }
 
+    private AtomicInteger count = new AtomicInteger(1);
+
     /**
      * 发送事件对象
      *
@@ -258,7 +267,8 @@ public class ByteDataExchanger {
         switch (eventCatchGhost) {
             case EVENT_CATCH_GHOST:
                 //eventPublisher.publishEvent(new CatchGhostEvent(this));
-                logger.info("任务注册：请求抓鬼任务");
+                int val = count.incrementAndGet();
+                logger.info("任务注册：请求抓鬼任务,第{}次", val);
                 factory.registerCatchGhost();
                 break;
             default:

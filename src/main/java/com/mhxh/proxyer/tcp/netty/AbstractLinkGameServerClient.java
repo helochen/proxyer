@@ -77,7 +77,7 @@ public abstract class AbstractLinkGameServerClient extends AbstractIdleService {
                 }, 5L, TimeUnit.SECONDS);
             }
         }).sync().channel();
-        channel.closeFuture().addListener(ChannelFutureListener.CLOSE);
+        channel.closeFuture().addListener(ChannelFutureListener.CLOSE).addListener((ChannelFutureListener) channelFuture -> logger.error("远程游戏服务器TCP链接被关闭....."));
         logger.info("connect to 远程游戏服务器成功......");
     }
 }
