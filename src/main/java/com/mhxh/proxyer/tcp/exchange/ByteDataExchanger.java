@@ -272,7 +272,7 @@ public class ByteDataExchanger {
                 //eventPublisher.publishEvent(new CatchGhostEvent(this));
                 int val = count.incrementAndGet();
                 logger.info("任务注册：请求抓鬼任务,第{}次", val);
-                factory.registerCatchGhost();
+                factory.registerCatchGhost(0);
                 break;
             default:
                 break;

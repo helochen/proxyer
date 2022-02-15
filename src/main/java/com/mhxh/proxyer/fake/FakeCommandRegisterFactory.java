@@ -56,14 +56,16 @@ public class FakeCommandRegisterFactory {
         exchanger.addFakeCommand(taskQueue);
     }
 
-    public void registerCatchGhost() {
+    public void registerCatchGhost(int buyFlyTicket) {
         Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
 
-        // 补充飞行符
-        FastUseSkillToXianlingDianpuCommand buyFlyTicketCommand = new FastUseSkillToXianlingDianpuCommand();
-        buyFlyTicketCommand.addRefuseFilter(RefuseSkillXianLingDianpuPoppupCommand.createInstance(exchanger));
-        taskQueue.offer(buyFlyTicketCommand);
-        taskQueue.offer(new BuyFlyTicketItemCommand(1));
+        if (buyFlyTicket > 0) {
+            // 补充飞行符
+            FastUseSkillToXianlingDianpuCommand buyFlyTicketCommand = new FastUseSkillToXianlingDianpuCommand();
+            buyFlyTicketCommand.addRefuseFilter(RefuseSkillXianLingDianpuPoppupCommand.createInstance(exchanger));
+            taskQueue.offer(buyFlyTicketCommand);
+            taskQueue.offer(new BuyFlyTicketItemCommand(1));
+        }
 
         // 先飞长安城
         UseBoxItemCommand useBoxItemCommand = new UseBoxItemCommand("1");

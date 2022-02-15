@@ -45,7 +45,7 @@ public class RegisterWaitCommandServiceImpl implements IRegisterWaitCommandServi
 
     @Override
     public void catchGhost() {
-        registerFactory.registerCatchGhost();
+        registerFactory.registerCatchGhost(1);
     }
 
     @Override
