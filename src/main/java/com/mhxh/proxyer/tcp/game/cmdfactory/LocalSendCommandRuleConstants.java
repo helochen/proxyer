@@ -129,4 +129,29 @@ public class LocalSendCommandRuleConstants {
      */
     public static final String BUY_FLY_TICKET_ITEM_CONTENT_GBK = "1503*-*do local ret={[\"数量\"]=\"%s\",[\"数据验证\"]=\"%s\",[\"时间\"]=%s,[\"商品\"]=\"飞行符*750\",[\"类型\"]=\"银子\"} return ret end";
 
+
+    /**
+     * 发送请求青龙堂任务信息
+     */
+    public static final String GET_QINGLONG_TASK_INFO = "1501*-*do local ret={[\"数据验证\"]=\"%s\",[\"地图\"]=1865,[\"编号\"]=1,[\"时间\"]=%s,[\"序列\"]=1} return ret end";
+
+    /**
+     * 获得青龙堂任务
+     */
+    public static final String GET_QINGLONG_TASK_FOR_SURE = "1502*-*do local ret={[1]=\"领取青龙堂任务\",[2]=1865,[3]=\"青龙堂主管\",[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+
+    /**
+     * 购买物品
+     */
+    public static final String BUY_SYSTEM_QINGLONG_TASK_ITEM = "80*-*do local ret={[\"时间\"]=%s,[\"数据验证\"]=\"%s\",[\"类型\"]=\"购买\",[\"数据\"]={[\"选中\"]=%s,[\"类型\"]=\"物品店\",[\"页数\"]=%s}} return ret end";
+
+    /**
+     * 上交任务
+     */
+    public static final String COMMIT_BUY_ITEM_BOX = "1502*-*do local ret={[1]=\"上交物品\",[2]=1865,[3]=\"青龙堂主管\",[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+
+    /**
+     * 确认上交物品,格子
+     */
+    public static final String FOR_SURE_COMMIT_ITEM_INFO = "3715*-*do local ret={[\"数量\"]={[1]=\"1\"},[\"类型\"]=\"道具\",[\"时间\"]=%s,[\"数据验证\"]=\"%s\",[\"格子\"]={[1]=%s},[\"银子\"]=\"0\"} return ret end";
 }

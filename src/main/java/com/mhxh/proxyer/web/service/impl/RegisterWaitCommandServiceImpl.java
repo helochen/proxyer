@@ -57,4 +57,16 @@ public class RegisterWaitCommandServiceImpl implements IRegisterWaitCommandServi
     public void buyFlyTicket(int num) {
         registerFactory.registerBuyFlyTicket(num);
     }
+
+    @Override
+    public void finishQinglongTask() {
+        registerFactory.registerFinishQinglongTask();
+    }
+
+    @Override
+    public void getQinglongTask() {
+        registerFactory.registerGetQinglongTask();
+    }
+
+
 }

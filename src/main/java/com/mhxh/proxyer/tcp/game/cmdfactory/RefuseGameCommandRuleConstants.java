@@ -23,8 +23,8 @@ public class RefuseGameCommandRuleConstants {
     /**
      * 如果有杜少海任务弹窗拦截
      */
-    private static final String REFUSE_CMD_JIANGHU_TASK_CONTENT_GBK = TaskConstants.TASK_JIAN_HU;
-    public static final byte[]  REFUSE_CMD_JIANGHU_TASK_CONTENT_BYTES = REFUSE_CMD_JIANGHU_TASK_CONTENT_GBK.getBytes(Charset.forName("GBK"));
+    private static final String REFUSE_CMD_JIANGHU_TASK_CONTENT_GBK = TaskConstants.TASK_JIANG_HU;
+    public static final byte[] REFUSE_CMD_JIANGHU_TASK_CONTENT_BYTES = REFUSE_CMD_JIANGHU_TASK_CONTENT_GBK.getBytes(Charset.forName("GBK"));
 
     /**
      * 拒绝任务抓鬼的领取扽弹窗
@@ -68,4 +68,11 @@ public class RefuseGameCommandRuleConstants {
      */
     private static final String REFUSE_XIANLING_DIANPU_POPUP_CONTENT_GBK = "名称=\"仙灵店铺\"";
     public static final byte[] REFUSE_XIANLING_DIANPU_POPUP_CONTENT_BYTES = REFUSE_XIANLING_DIANPU_POPUP_CONTENT_GBK.getBytes(Charset.forName("GBK"));
+
+    /**
+     * 拒绝青龙堂弹窗
+     */
+    private static final String REFUSE_QINGLONG_TASK_CONTENT_POPUP_CONTENT_GBK = "听闻帮派青龙堂的青龙堂主管正在四处搜寻";
+    public static final byte[] REFUSE_QINGLONG_TASK_CONTENT_POPUP_CONTENT_GBKBYTES = REFUSE_QINGLONG_TASK_CONTENT_POPUP_CONTENT_GBK.getBytes(Charset.forName("GBK"));
+
 }

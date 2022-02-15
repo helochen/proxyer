@@ -42,9 +42,18 @@ public class TaskDataManager {
                 return;
             }
         }
-        roleTasks.offer(taskBean);
         // 产生任务对象
-        exchanger.registerChangeMapFakeCommand(taskBean.getMapName());
+        switch (taskBean.getTaskType()) {
+            case 1:
+                exchanger.registerFinishQinglongTaskItem(taskBean);
+                break;
+            case 2:
+                roleTasks.offer(taskBean);
+                exchanger.registerChangeMapFakeCommand(taskBean.getMapName());
+                break;
+            default:
+                break;
+        }
     }
 
     /**

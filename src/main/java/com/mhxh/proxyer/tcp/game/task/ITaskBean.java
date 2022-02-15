@@ -27,4 +27,6 @@ public interface ITaskBean {
     int getX();
 
     int getY();
+
+    int getTaskType();
 }
