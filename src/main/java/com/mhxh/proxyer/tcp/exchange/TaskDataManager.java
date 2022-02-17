@@ -39,6 +39,7 @@ public class TaskDataManager {
         while (iterator.hasNext()) {
             ITaskBean next = iterator.next();
             if (next.equals(taskBean)) {
+                logger.info("任务注册：重复得抓鬼任务{}", taskBean.getNpcName());
                 return;
             }
         }

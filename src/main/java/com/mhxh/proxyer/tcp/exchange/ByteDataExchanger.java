@@ -9,6 +9,7 @@ import com.mhxh.proxyer.tcp.game.constants.MapConstants;
 import com.mhxh.proxyer.tcp.game.constants.SectMapConstants;
 import com.mhxh.proxyer.tcp.game.task.ITaskBean;
 import com.mhxh.proxyer.tcp.service.IDumpDataService;
+import com.mhxh.proxyer.web.patch.CatchGhostTaskPatch;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import lombok.Getter;
@@ -296,5 +297,21 @@ public class ByteDataExchanger {
         taskQueue.offer(requestQinglongTaskInfoCommand);
 
         this.addFakeCommand(taskQueue);
+    }
+
+    /**
+     * 重启任务，避免有时候抓鬼被卡住
+     */
+    synchronized public void tryRegisterRestartTask() {
+        if (CatchGhostTaskPatch.getInstance().timeout()) {
+            // 补充任务
+            Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+            QueryTaskListCommand queryTaskListCommand = new QueryTaskListCommand();
+            queryTaskListCommand.addRefuseFilter(RefuseTaskListPopupCommand.createInstance(this));
+            taskQueue.offer(queryTaskListCommand);
+
+            this.addFakeCommand(taskQueue);
+        }
+
     }
 }

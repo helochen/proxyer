@@ -97,15 +97,16 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
                                 int verifyIdx = ByteBufUtil.indexOf(CMD_VERIFY_HEX_BYTEBUF, readBuf);
 
                                 if (timeIdx >= 0 && verifyIdx >= 0) {
-                                    byte[] timeBytes = new byte[GameCommandConstant.CMD_CONTENT_TIME_CONTENT_LENGTH];
-                                    readBuf.getBytes(timeIdx + GameCommandConstant.CMD_CONTENT_TIME_SKIP_LENGTH, timeBytes);
-
-                                    byte[] verifyBytes = new byte[GameCommandConstant.CMD_CONTENT_VERIFY_CONTENT_LENGTH];
-                                    readBuf.getBytes(verifyIdx + GameCommandConstant.CMD_CONTENT_VERIFY_SKIP_LENGTH, verifyBytes);
-                                    String timeGBK = new String(timeBytes, Charset.forName("GBK"));
-                                    String verifyGBK = new String(verifyBytes, Charset.forName("GBK"));
                                     IFormatCommand oneCommand = exchanger.getOneCommand();
                                     if (!ObjectUtils.isEmpty(oneCommand)) {
+                                        byte[] timeBytes = new byte[GameCommandConstant.CMD_CONTENT_TIME_CONTENT_LENGTH];
+                                        readBuf.getBytes(timeIdx + GameCommandConstant.CMD_CONTENT_TIME_SKIP_LENGTH, timeBytes);
+
+                                        byte[] verifyBytes = new byte[GameCommandConstant.CMD_CONTENT_VERIFY_CONTENT_LENGTH];
+                                        readBuf.getBytes(verifyIdx + GameCommandConstant.CMD_CONTENT_VERIFY_SKIP_LENGTH, verifyBytes);
+                                        String timeGBK = new String(timeBytes, Charset.forName("GBK"));
+                                        String verifyGBK = new String(verifyBytes, Charset.forName("GBK"));
+
                                         String fakeCmdContent = oneCommand.format(timeGBK, verifyGBK);
                                         logger.info("发送伪装命令：{}", fakeCmdContent);
                                         byte[] fakeCmdContentBytes = fakeCmdContent.getBytes(Charset.forName("GBK"));
@@ -122,11 +123,12 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
                                             } else if (oneCommand.type() == 2) {
                                                 localChannel.writeAndFlush(proxyCmd.retain());
                                             }
-
-
                                         } finally {
                                             ReferenceCountUtil.release(proxyCmd);
                                         }
+                                    }else{
+                                        // 如果长期没有任务一直在点抓鬼，开始抓鬼
+                                        exchanger.tryRegisterRestartTask();
                                     }
                                 }
 

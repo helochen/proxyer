@@ -6,6 +6,7 @@ import com.mhxh.proxyer.fake.command.remote.refuse.*;
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendCommandRuleConstants;
 import com.mhxh.proxyer.tcp.game.constants.MapConstants;
+import com.mhxh.proxyer.web.patch.CatchGhostTaskPatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -57,6 +58,9 @@ public class FakeCommandRegisterFactory {
     }
 
     public void registerCatchGhost(int buyFlyTicket) {
+        // 开始抓鬼任务
+        CatchGhostTaskPatch.getInstance().start();
+
         Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
 
         if (buyFlyTicket > 0) {
@@ -76,6 +80,8 @@ public class FakeCommandRegisterFactory {
         taskQueue.offer(new ChangAnNpcFlyToSectCommand("阴曹地府"));
         // 领任务
         RequestCatchGhostCommand requestCatchGhostCommand = new RequestCatchGhostCommand();
+        // 禁止再次领取任务弹窗
+        requestCatchGhostCommand.addRefuseFilter(RefuseCatchGhostAgainPopupCommand.createInstance(exchanger));
         requestCatchGhostCommand.addRefuseFilter(RefuseCatchGhostPopupCommand.createInstance(exchanger));
         taskQueue.offer(requestCatchGhostCommand);
         // 确定任务

@@ -43,8 +43,9 @@ public class DumpDataServiceImpl implements IDumpDataService {
                 logger.info("\n{}->\t发送16进制数据=>{}," +
                                 "\n{}->\t发送GBK解析数据=> {}", from,
                         hexDump, from, gbk);
+            } else {
+                logger.info("全局排除信息内容：{}", gbk);
             }
-
         } catch (Exception e) {
             logger.info("数据转换异常：{}", e.getMessage());
         } finally {
@@ -97,7 +98,7 @@ public class DumpDataServiceImpl implements IDumpDataService {
                     logger.info("未知的任务：{}", taskContent);
                 }
             }
-        } else if(gbk.contains(TaskConstants.TASK_QING_LONG)){
+        } else if (gbk.contains(TaskConstants.TASK_QING_LONG)) {
             Matcher tasksFind = DataSplitConstant.TASK_QING_LONG_NEED_ITEM.matcher(gbk);
             while (tasksFind.find()) {
                 ITaskBean taskBean = TaskBeanCreateFactory.createTaskBean(TaskConstants.TASK_QING_LONG, tasksFind.group());
