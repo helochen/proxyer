@@ -78,6 +78,6 @@ public class RefuseGameCommandRuleConstants {
     /**
      * 已经有人领取抓鬼任务弹窗
      */
-    private static final String REFUSE_CATCH_GHOST_GET_TASK_AGAIN_POPUP_CONTENT_GBK = "队伍中已有人领取过此任务";
+    private static final String REFUSE_CATCH_GHOST_GET_TASK_AGAIN_POPUP_CONTENT_GBK = "队伍中已有队员领取过此任务";
     public static final byte[] REFUSE_CATCH_GHOST_GET_TASK_AGAIN_POPUP_CONTENT_GBK_BYTES = REFUSE_CATCH_GHOST_GET_TASK_AGAIN_POPUP_CONTENT_GBK.getBytes(Charset.forName("GBK"));
 }
