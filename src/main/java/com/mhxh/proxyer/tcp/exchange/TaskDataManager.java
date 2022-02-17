@@ -3,6 +3,7 @@ package com.mhxh.proxyer.tcp.exchange;
 import com.google.common.base.Splitter;
 import com.mhxh.proxyer.tcp.game.constants.DataSplitConstant;
 import com.mhxh.proxyer.tcp.game.task.ITaskBean;
+import com.mhxh.proxyer.web.patch.CatchGhostTaskPatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,12 @@ public class TaskDataManager {
             ITaskBean next = iterator.next();
             if (next.equals(taskBean)) {
                 logger.info("任务注册：重复得抓鬼任务{}", taskBean.getNpcName());
+                CatchGhostTaskPatch.getInstance().start();
+                if (taskBean.getTaskType() == 2) {
+                    if (CatchGhostTaskPatch.getInstance().isBlock()) {
+                        exchanger.registerChangeMapFakeCommand(next.getMapName());
+                    }
+                }
                 return;
             }
         }
@@ -49,6 +56,7 @@ public class TaskDataManager {
                 exchanger.registerFinishQinglongTaskItem(taskBean);
                 break;
             case 2:
+                CatchGhostTaskPatch.getInstance().reset();
                 roleTasks.offer(taskBean);
                 exchanger.registerChangeMapFakeCommand(taskBean.getMapName());
                 break;
