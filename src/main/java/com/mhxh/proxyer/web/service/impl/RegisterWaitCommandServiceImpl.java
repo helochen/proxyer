@@ -2,6 +2,7 @@ package com.mhxh.proxyer.web.service.impl;
 
 import com.mhxh.proxyer.fake.FakeCommandRegisterFactory;
 import com.mhxh.proxyer.tcp.game.constants.MapConstants;
+import com.mhxh.proxyer.web.patch.CatchGhostTaskPatch;
 import com.mhxh.proxyer.web.service.IRegisterWaitCommandService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -66,6 +67,11 @@ public class RegisterWaitCommandServiceImpl implements IRegisterWaitCommandServi
     @Override
     public void getQinglongTask() {
         registerFactory.registerGetQinglongTask();
+    }
+
+    @Override
+    public void catchGhostBlocked() {
+        CatchGhostTaskPatch.getInstance().forceBlock();
     }
 
 

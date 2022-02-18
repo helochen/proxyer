@@ -19,4 +19,6 @@ public interface IRegisterWaitCommandService {
     void finishQinglongTask();
 
     void getQinglongTask();
+
+    void catchGhostBlocked();
 }

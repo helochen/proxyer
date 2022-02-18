@@ -175,9 +175,11 @@ public class ByteDataExchanger {
                 this.buyFlyTicketFunction(1, taskQueue);
                 UseBoxItemCommand useBoxItemCommand = new UseBoxItemCommand("1");
                 useBoxItemCommand.addRefuseFilter(RefuseFlyTicketPopupCommand.createInstance(this));
+                taskQueue.offer(useBoxItemCommand);
                 taskQueue.offer(new UseFlyItemFlayToMapCommand(LocalSendCommandRuleConstants.USE_ITEM_FLY_TO_MAP_GKB, serialNo));
                 taskQueue.offer(new UseItemFlushCommand());
-
+            } else {
+                logger.error("找到地图，但是没用结果：{}", mapName);
             }
         } else if (SectMapConstants.SECT_NAMES.contains(mapName)) {
             this.buyFlyTicketFunction(1, taskQueue);
@@ -304,6 +306,7 @@ public class ByteDataExchanger {
      */
     synchronized public void tryRegisterRestartTask() {
         if (CatchGhostTaskPatch.getInstance().timeout()) {
+            logger.info("抓鬼补充任务触发");
             // 补充任务
             Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
             QueryTaskListCommand queryTaskListCommand = new QueryTaskListCommand();

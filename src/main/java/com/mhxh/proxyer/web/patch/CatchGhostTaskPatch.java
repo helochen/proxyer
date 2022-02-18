@@ -1,5 +1,6 @@
 package com.mhxh.proxyer.web.patch;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -27,9 +28,11 @@ public class CatchGhostTaskPatch {
     private CatchGhostTaskPatch() {
     }
 
-    private final long taskTimeOut = 60000L;
+    private final long taskTimeOut = 30000L;
 
     private final AtomicLong time = new AtomicLong(0);
+
+    private volatile AtomicInteger reset = new AtomicInteger(0);
 
     public long getTime() {
         return time.get();
@@ -45,8 +48,22 @@ public class CatchGhostTaskPatch {
 
     public boolean timeout() {
         if (this.getTime() > 0 && System.currentTimeMillis() - this.getTime() > taskTimeOut) {
+            this.setTime(System.currentTimeMillis());
+            this.reset.set(1);
             return true;
         }
         return false;
+    }
+
+    public boolean isBlock() {
+        return this.reset.get() == 1;
+    }
+
+    public void reset() {
+        reset.set(0);
+    }
+
+    public void forceBlock() {
+        this.reset.set(1);
     }
 }

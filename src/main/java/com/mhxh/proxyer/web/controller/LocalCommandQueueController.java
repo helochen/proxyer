@@ -86,4 +86,12 @@ public class LocalCommandQueueController {
         return "success";
     }
 
+    /**
+     * 通知抓鬼被拦截任务
+     */
+    @RequestMapping("block")
+    public String catchGhostTaskBlock() {
+        registerWaitCommandService.catchGhostBlocked();
+        return "block success";
+    }
 }
