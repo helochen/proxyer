@@ -40,20 +40,21 @@ public class TaskDataManager {
         synchronized (TaskDataManager.class) {
             while (iterator.hasNext()) {
                 ITaskBean next = iterator.next();
-                if (next.equals(taskBean)) {
-                    logger.info("任务注册：重复得抓鬼任务{}", taskBean.getNpcName());
-                    CatchGhostTaskPatch.getInstance().start();
-                    if (taskBean.getTaskType() == 2) {
-                        if (CatchGhostTaskPatch.getInstance().isBlock()) {
-                            CatchGhostTaskPatch.getInstance().reset();
-                            exchanger.registerChangeMapFakeCommand(next.getMapName());
-                        }
-                    }
-                    return;
-                }
                 if (next.isFinish()) {
                     logger.info("抓鬼DEBUG信息：移除抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), next.getNpcName(), next.getMapName());
                     iterator.remove();
+                }else {
+                    if (next.equals(taskBean)) {
+                        logger.info("任务注册：重复得抓鬼任务{}", taskBean.getNpcName());
+                        CatchGhostTaskPatch.getInstance().start();
+                        if (taskBean.getTaskType() == 2) {
+                            if (CatchGhostTaskPatch.getInstance().isBlock()) {
+                                CatchGhostTaskPatch.getInstance().reset();
+                                exchanger.registerChangeMapFakeCommand(next.getMapName());
+                            }
+                        }
+                        return;
+                    }
                 }
             }
         }
