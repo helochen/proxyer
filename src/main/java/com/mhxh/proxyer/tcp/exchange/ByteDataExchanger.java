@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -33,7 +32,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 public class ByteDataExchanger {
@@ -68,9 +66,6 @@ public class ByteDataExchanger {
      */
     private Queue<IFormatCommand> currentCommandQueue;
     private boolean waiting = false;
-    private AtomicLong frequency = new AtomicLong(0);
-    @Value("${local.task.frequency}")
-    private long pause;
 
     public static final int SERVER_OF_REMOTE = 1;
     public static final int SERVER_OF_LOCAL = 2;
@@ -123,18 +118,15 @@ public class ByteDataExchanger {
      * @return
      */
     public synchronized IFormatCommand getOneCommand() {
-        if (System.currentTimeMillis() - frequency.get() > pause) {
-            if (!ObjectUtils.isEmpty(currentCommandQueue) && !waiting) {
-                IFormatCommand current = currentCommandQueue.poll();
-                if (CollectionUtils.isEmpty(currentCommandQueue)) {
-                    currentCommandQueue = tasks.poll();
-                }
-                if (!ObjectUtils.isEmpty(current)) {
-                    current.beforeCommandAddFilters();
-                }
-                frequency.set(System.currentTimeMillis());
-                return current;
+        if (!ObjectUtils.isEmpty(currentCommandQueue) && !waiting) {
+            IFormatCommand current = currentCommandQueue.poll();
+            if (CollectionUtils.isEmpty(currentCommandQueue)) {
+                currentCommandQueue = tasks.poll();
             }
+            if (!ObjectUtils.isEmpty(current)) {
+                current.beforeCommandAddFilters();
+            }
+            return current;
         }
         return null;
     }
