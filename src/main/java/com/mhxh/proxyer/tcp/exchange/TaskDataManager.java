@@ -70,6 +70,7 @@ public class TaskDataManager {
                     logger.info("抓鬼DEBUG信息：新增抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), taskBean.getMapName(), taskBean.getNpcName());
                 }
                 exchanger.registerChangeMapFakeCommand(taskBean.getMapName());
+                taskBean.finish();
                 break;
             default:
                 break;
