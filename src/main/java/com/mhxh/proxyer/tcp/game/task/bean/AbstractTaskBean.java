@@ -4,6 +4,11 @@ import com.mhxh.proxyer.tcp.game.task.ITaskBean;
 
 public abstract class AbstractTaskBean implements ITaskBean {
 
+    /**
+     * 任务是否完成
+     */
+    protected volatile boolean finish = false;
+
     protected int taskType = 0;
     /**
      * 地图的中文名
@@ -15,7 +20,7 @@ public abstract class AbstractTaskBean implements ITaskBean {
      */
     private String mapId;
 
-    private Integer[] xy = new Integer[2];
+    private final Integer[] xy = new Integer[2];
 
     /**
      * 怪NPC的中文名
@@ -115,5 +120,15 @@ public abstract class AbstractTaskBean implements ITaskBean {
     @Override
     public int getTaskType() {
         return taskType;
+    }
+
+    @Override
+    public void finish() {
+        finish = true;
+    }
+
+    @Override
+    public boolean isFinish() {
+        return finish;
     }
 }

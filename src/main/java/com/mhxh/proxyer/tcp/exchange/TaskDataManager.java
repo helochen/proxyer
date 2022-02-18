@@ -44,10 +44,15 @@ public class TaskDataManager {
                 CatchGhostTaskPatch.getInstance().start();
                 if (taskBean.getTaskType() == 2) {
                     if (CatchGhostTaskPatch.getInstance().isBlock()) {
+                        CatchGhostTaskPatch.getInstance().reset();
                         exchanger.registerChangeMapFakeCommand(next.getMapName());
                     }
                 }
                 return;
+            }
+            if (next.isFinish()) {
+                logger.info("抓鬼DEBUG信息：移除抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), next.getNpcName(), next.getMapName());
+                iterator.remove();
             }
         }
         // 产生任务对象
@@ -58,6 +63,7 @@ public class TaskDataManager {
             case 2:
                 CatchGhostTaskPatch.getInstance().reset();
                 roleTasks.offer(taskBean);
+                logger.info("抓鬼DEBUG信息：新增抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), taskBean.getMapName(), taskBean.getNpcName());
                 exchanger.registerChangeMapFakeCommand(taskBean.getMapName());
                 break;
             default:
@@ -92,8 +98,7 @@ public class TaskDataManager {
                             .setId(id).setMapId(mapId);
 
                     exchanger.registerFightWithNpcCommand(next);
-                    iterator.remove();
-
+                    next.finish();
                     return true;
                 } catch (Exception ex) {
                     logger.error("{}, {}", npcDetail, ex.getMessage());

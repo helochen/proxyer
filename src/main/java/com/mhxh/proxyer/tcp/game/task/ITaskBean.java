@@ -29,4 +29,11 @@ public interface ITaskBean {
     int getY();
 
     int getTaskType();
+
+    void finish();
+
+    default boolean isFinish() {
+        return false;
+    }
+
 }
