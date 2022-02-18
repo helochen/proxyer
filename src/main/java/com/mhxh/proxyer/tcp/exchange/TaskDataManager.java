@@ -37,22 +37,24 @@ public class TaskDataManager {
     public void registerTaskBean(ITaskBean taskBean) {
         // 将现在手头的任务进行注册
         Iterator<ITaskBean> iterator = roleTasks.iterator();
-        while (iterator.hasNext()) {
-            ITaskBean next = iterator.next();
-            if (next.equals(taskBean)) {
-                logger.info("任务注册：重复得抓鬼任务{}", taskBean.getNpcName());
-                CatchGhostTaskPatch.getInstance().start();
-                if (taskBean.getTaskType() == 2) {
-                    if (CatchGhostTaskPatch.getInstance().isBlock()) {
-                        CatchGhostTaskPatch.getInstance().reset();
-                        exchanger.registerChangeMapFakeCommand(next.getMapName());
+        synchronized (TaskDataManager.class) {
+            while (iterator.hasNext()) {
+                ITaskBean next = iterator.next();
+                if (next.equals(taskBean)) {
+                    logger.info("任务注册：重复得抓鬼任务{}", taskBean.getNpcName());
+                    CatchGhostTaskPatch.getInstance().start();
+                    if (taskBean.getTaskType() == 2) {
+                        if (CatchGhostTaskPatch.getInstance().isBlock()) {
+                            CatchGhostTaskPatch.getInstance().reset();
+                            exchanger.registerChangeMapFakeCommand(next.getMapName());
+                        }
                     }
+                    return;
                 }
-                return;
-            }
-            if (next.isFinish()) {
-                logger.info("抓鬼DEBUG信息：移除抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), next.getNpcName(), next.getMapName());
-                iterator.remove();
+                if (next.isFinish()) {
+                    logger.info("抓鬼DEBUG信息：移除抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), next.getNpcName(), next.getMapName());
+                    iterator.remove();
+                }
             }
         }
         // 产生任务对象
@@ -62,8 +64,10 @@ public class TaskDataManager {
                 break;
             case 2:
                 CatchGhostTaskPatch.getInstance().reset();
-                roleTasks.offer(taskBean);
-                logger.info("抓鬼DEBUG信息：新增抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), taskBean.getMapName(), taskBean.getNpcName());
+                synchronized (TaskDataManager.class) {
+                    roleTasks.offer(taskBean);
+                    logger.info("抓鬼DEBUG信息：新增抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), taskBean.getMapName(), taskBean.getNpcName());
+                }
                 exchanger.registerChangeMapFakeCommand(taskBean.getMapName());
                 break;
             default:
