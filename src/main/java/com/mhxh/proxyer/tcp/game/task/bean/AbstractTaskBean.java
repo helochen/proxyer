@@ -4,6 +4,8 @@ import com.mhxh.proxyer.tcp.game.task.ITaskBean;
 
 public abstract class AbstractTaskBean implements ITaskBean {
 
+
+    private final long expired = System.currentTimeMillis();
     /**
      * 任务是否完成
      */
@@ -129,6 +131,13 @@ public abstract class AbstractTaskBean implements ITaskBean {
 
     @Override
     public boolean isFinish() {
-        return finish;
+        if (finish) {
+            logger.info("抓鬼DEBUG信息：DEBUG命令完成抓鬼任务...");
+        }
+        boolean timeOut = System.currentTimeMillis() - expired > 60000L;
+        if (timeOut) {
+            logger.info("抓鬼DEBUG信息：时间过期导致完成抓鬼任务....");
+        }
+        return finish || timeOut;
     }
 }

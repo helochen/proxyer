@@ -2,6 +2,7 @@ package com.mhxh.proxyer.web.service.impl;
 
 import com.mhxh.proxyer.fake.FakeCommandRegisterFactory;
 import com.mhxh.proxyer.tcp.game.constants.MapConstants;
+import com.mhxh.proxyer.tcp.game.constants.SectMapConstants;
 import com.mhxh.proxyer.web.patch.CatchGhostTaskPatch;
 import com.mhxh.proxyer.web.service.IRegisterWaitCommandService;
 import org.springframework.stereotype.Service;
@@ -28,9 +29,8 @@ public class RegisterWaitCommandServiceImpl implements IRegisterWaitCommandServi
 
     @Override
     public void flyToSect(String sect) {
-        String serialNo = MapConstants.NAME_TO_SERIAL_NO.get("1001");
-        if (StringUtils.hasText(sect) && StringUtils.hasText(serialNo)) {
-            registerFactory.registerFlyToSectByName(serialNo, sect);
+        if (SectMapConstants.SECT_NAMES.contains(sect)) {
+            registerFactory.registerFlyToSectByName(sect);
         }
     }
 

@@ -30,10 +30,14 @@ public class FakeCommandRegisterFactory {
         exchanger.addFakeCommand(taskQueue);
     }
 
-    public void registerFlyToSectByName(String serialNo, String sect) {
+    public void registerFlyToSectByName(String sect) {
         Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
         // 先飞长安城
-        taskQueue.offer(new UseFlyItemFlayToMapCommand(LocalSendCommandRuleConstants.USE_ITEM_FLY_TO_MAP_GKB, serialNo));
+        UseBoxItemCommand useBoxItemCommand = new UseBoxItemCommand("1");
+        useBoxItemCommand.addRefuseFilter(RefuseFlyTicketPopupCommand.createInstance(exchanger));
+        taskQueue.offer(useBoxItemCommand);
+        taskQueue.offer(new UseFlyItemFlayToMapCommand(LocalSendCommandRuleConstants.USE_ITEM_FLY_TO_MAP_GKB, "2"));
+        taskQueue.offer(new UseItemFlushCommand());
         taskQueue.offer(new ChangAnNpcFlyToSectCommand(sect));
 
         exchanger.addFakeCommand(taskQueue);

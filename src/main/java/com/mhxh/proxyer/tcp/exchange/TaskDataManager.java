@@ -38,12 +38,13 @@ public class TaskDataManager {
         // 将现在手头的任务进行注册
         Iterator<ITaskBean> iterator = roleTasks.iterator();
 
-        while (iterator.hasNext()) {
-            ITaskBean next = iterator.next();
-            if (next.isFinish()) {
-                logger.info("抓鬼DEBUG信息：移除抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), next.getNpcName(), next.getMapName());
-                iterator.remove();
-            } else {
+        synchronized (TaskDataManager.class) {
+            while (iterator.hasNext()) {
+                ITaskBean next = iterator.next();
+                if (next.isFinish()) {
+                    logger.info("抓鬼DEBUG信息：移除抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), next.getNpcName(), next.getMapName());
+                    iterator.remove();
+                }
                 if (next.equals(taskBean)) {
                     logger.info("任务注册：重复得抓鬼任务{}", taskBean.getNpcName());
                     CatchGhostTaskPatch.getInstance().start();
@@ -68,12 +69,12 @@ public class TaskDataManager {
                 roleTasks.offer(taskBean);
                 logger.info("抓鬼DEBUG信息：新增抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), taskBean.getMapName(), taskBean.getNpcName());
                 exchanger.registerChangeMapFakeCommand(taskBean.getMapName());
-                taskBean.finish();
                 break;
             default:
                 break;
         }
     }
+
 
     /**
      * 把任务信息进行填充

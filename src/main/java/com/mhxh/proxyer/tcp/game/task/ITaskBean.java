@@ -1,6 +1,11 @@
 package com.mhxh.proxyer.tcp.game.task;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public interface ITaskBean {
+
+    Logger logger = LoggerFactory.getLogger(ITaskBean.class);
 
     void initNpcName(String npc);
 
