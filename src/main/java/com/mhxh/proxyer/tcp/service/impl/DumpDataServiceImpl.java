@@ -36,7 +36,7 @@ public class DumpDataServiceImpl implements IDumpDataService {
             String from = source == ByteDataExchanger.SERVER_OF_LOCAL ?
                     "本地数据" : "服务器数据";
 
-            if (!gbk.contains("欢迎") && !gbk.contains("击败") && !gbk.contains("奖励") && !gbk.contains("活命")
+            if (!gbk.contains("欢迎") && !gbk.contains("击败") && !gbk.contains("活命")
                     && !gbk.contains("频道")) {
                 String hexDump = ByteBufUtil.hexDump(buf);
                 this.findTaskByReturnData(gbk);
