@@ -4,7 +4,7 @@ public interface IRegisterWaitCommandService {
 
     void flyToMap(String mapId);
 
-    void flyToSect(String sect);
+    String flyToSect(String sect);
 
     void flyToJiangNanMap();
 

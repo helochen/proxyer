@@ -24,8 +24,7 @@ public class LocalCommandQueueController {
 
     @RequestMapping("fly-sect")
     public String testFlyToSect(@RequestParam("sect") String sect) {
-        registerWaitCommandService.flyToSect(sect);
-        return "success";
+        return registerWaitCommandService.flyToSect(sect);
     }
 
     @RequestMapping("fly-jiangnan")

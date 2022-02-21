@@ -28,10 +28,12 @@ public class RegisterWaitCommandServiceImpl implements IRegisterWaitCommandServi
     }
 
     @Override
-    public void flyToSect(String sect) {
+    public String flyToSect(String sect) {
         if (SectMapConstants.SECT_NAMES.contains(sect)) {
             registerFactory.registerFlyToSectByName(sect);
+            return "success";
         }
+        return "fail";
     }
 
     @Override
