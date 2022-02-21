@@ -77,10 +77,8 @@ public class RegisterWaitCommandServiceImpl implements IRegisterWaitCommandServi
     }
 
     @Override
-    public void workForNpc(int type , int sum) {
-        if (type == 0) {
-            registerFactory.registerWorkForNpc(type , sum);
-        }
+    public void workForNpc(int type, int sum) {
+        registerFactory.registerWorkForNpc(type, sum);
     }
 
     @Override
