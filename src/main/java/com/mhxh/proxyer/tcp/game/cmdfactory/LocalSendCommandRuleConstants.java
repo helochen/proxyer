@@ -154,4 +154,10 @@ public class LocalSendCommandRuleConstants {
      * 确认上交物品,格子
      */
     public static final String FOR_SURE_COMMIT_ITEM_INFO = "3715*-*do local ret={[\"数量\"]={[1]=\"1\"},[\"类型\"]=\"道具\",[\"时间\"]=%s,[\"数据验证\"]=\"%s\",[\"格子\"]={[1]=%s},[\"银子\"]=\"0\"} return ret end";
+
+    /**
+     * 打造对话,打工一次
+     */
+    public static final String WORK_HARD_FOR_WEAPON_ONE_TIME = "1502*-*do local ret={[1]=\"打工一次\",[2]=1025,[3]=\"冯铁匠\",[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
+    public static final String WORK_HARD_FOR_CLOTH_ONE_TIME = "1502*-*do local ret={[1]=\"打工一次\",[2]=1022,[3]=\"张裁缝\",[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
 }

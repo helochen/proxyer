@@ -24,7 +24,7 @@ public class RefuseCatchGhostAgainPopupCommand extends  AbstractRefuseCommand{
 
     public static IRefuseFilter createInstance(ByteDataExchanger exchanger) {
         if (instance == null) {
-            synchronized (RefuseCatchGhostInfoPopupCommand.class) {
+            synchronized (RefuseCatchGhostAgainPopupCommand.class) {
                 if (instance == null) {
                     instance = new RefuseCatchGhostAgainPopupCommand(exchanger);
                     exchanger.addRefuseCommand(instance);

@@ -14,4 +14,9 @@ public interface IRefuseFilter extends IType {
      * 增加一次
      */
     int addOneTime();
+
+    /**
+     * 重置数量
+     */
+    void reset();
 }

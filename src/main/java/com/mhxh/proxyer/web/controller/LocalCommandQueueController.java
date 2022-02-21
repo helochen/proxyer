@@ -41,6 +41,7 @@ public class LocalCommandQueueController {
 
     /**
      * 走门派飞向抓鬼
+     *
      * @return
      */
     @RequestMapping("catch-ghost")
@@ -53,7 +54,7 @@ public class LocalCommandQueueController {
      * 测试下移动功能
      */
     @RequestMapping("move-to")
-    public String moveTo(@RequestParam("x")int x , @RequestParam("y")int y) {
+    public String moveTo(@RequestParam("x") int x, @RequestParam("y") int y) {
         registerWaitCommandService.moveTo(x, y);
         return "success";
     }
@@ -92,5 +93,27 @@ public class LocalCommandQueueController {
     public String catchGhostTaskBlock() {
         registerWaitCommandService.catchGhostBlocked();
         return "block success";
+    }
+
+    /**
+     * 打工一次的逻辑
+     */
+    @RequestMapping("work")
+    public String workHard(@RequestParam(value = "type", defaultValue = "0") int type,
+                           @RequestParam(value = "sum", defaultValue = "5000") int sum) {
+        registerWaitCommandService.workForNpc(type, sum);
+        return "success";
+    }
+
+    @RequestMapping("buy-haima")
+    public String buyHaiMa() {
+        registerWaitCommandService.buySystemItemHaiMa();
+        return "success";
+    }
+
+    @RequestMapping("clear")
+    public String clear() {
+        registerWaitCommandService.clearAllCommand();
+        return "success";
     }
 }

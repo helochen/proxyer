@@ -18,7 +18,7 @@ public class RefuseTaskListPopupCommand extends AbstractRefuseCommand implements
 
     public static IRefuseFilter createInstance(ByteDataExchanger exchanger) {
         if (instance == null) {
-            synchronized (RefuseFlagPopupCommand.class) {
+            synchronized (RefuseTaskListPopupCommand.class) {
                 if (instance == null) {
                     instance = new RefuseTaskListPopupCommand(exchanger);
                     exchanger.addRefuseCommand(instance);

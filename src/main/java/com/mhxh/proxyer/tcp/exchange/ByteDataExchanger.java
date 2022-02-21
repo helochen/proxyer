@@ -316,4 +316,11 @@ public class ByteDataExchanger {
         }
 
     }
+
+    public void clearAllCommand() {
+        tasks.clear();
+        for (IRefuseFilter filter : filters) {
+            filter.reset();
+        }
+    }
 }

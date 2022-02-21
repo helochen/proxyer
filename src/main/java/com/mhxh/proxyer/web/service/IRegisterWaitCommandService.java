@@ -21,4 +21,10 @@ public interface IRegisterWaitCommandService {
     void getQinglongTask();
 
     void catchGhostBlocked();
+
+    void workForNpc(int type, int sum);
+
+    void buySystemItemHaiMa();
+
+    void clearAllCommand();
 }

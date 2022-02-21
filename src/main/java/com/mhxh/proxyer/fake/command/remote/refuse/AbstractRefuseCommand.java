@@ -38,4 +38,9 @@ public abstract class AbstractRefuseCommand implements IRefuseFilter, Comparable
     public int compareTo(Object o) {
         return this == o ? 0 : -1;
     }
+
+    @Override
+    public void reset() {
+        count.set(0);
+    }
 }

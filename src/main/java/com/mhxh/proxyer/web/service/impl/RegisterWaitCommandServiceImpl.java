@@ -76,5 +76,22 @@ public class RegisterWaitCommandServiceImpl implements IRegisterWaitCommandServi
         CatchGhostTaskPatch.getInstance().forceBlock();
     }
 
+    @Override
+    public void workForNpc(int type , int sum) {
+        if (type == 0) {
+            registerFactory.registerWorkForNpc(type , sum);
+        }
+    }
+
+    @Override
+    public void buySystemItemHaiMa() {
+        registerFactory.registerBuySystemItemHaiMa();
+    }
+
+    @Override
+    public void clearAllCommand() {
+        registerFactory.registerClearCommand();
+    }
+
 
 }

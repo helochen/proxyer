@@ -129,4 +129,38 @@ public class FakeCommandRegisterFactory {
         taskQueue.offer(new RequestQinglongTaskInfoCommand());
         exchanger.addFakeCommand(taskQueue);
     }
+
+    public void registerWorkForNpc(int type , int sum) {
+        Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+        for (int i = 0; i < sum; i++) {
+            // 吃东西
+            taskQueue.add(new BuySystemItemCommand(2 , 1));
+            taskQueue.add(new UseBoxItemCommand("1"));
+            // 打造
+            for (int j = 0; j < 4; j++) {
+                if (type == 0) {
+                    RequestWorkHardForWeaponCommand requestWorkHardForWeaponCommand = new RequestWorkHardForWeaponCommand();
+                    requestWorkHardForWeaponCommand.addRefuseFilter(RefuseWorkHardPopupCommand.createInstance(exchanger));
+                    taskQueue.add(requestWorkHardForWeaponCommand);
+                } else {
+                    RequestWorkhardForClothCommand requestWorkhardForClothCommand = new RequestWorkhardForClothCommand();
+                    requestWorkhardForClothCommand.addRefuseFilter(RefuseWorkHardPopupCommand.createInstance(exchanger));
+                    taskQueue.add(requestWorkhardForClothCommand);
+                }
+            }
+
+        }
+        exchanger.addFakeCommand(taskQueue);
+    }
+
+    public void registerBuySystemItemHaiMa() {
+        Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+        // 买东西
+        taskQueue.add(new BuySystemItemCommand(2 , 1));
+        exchanger.addFakeCommand(taskQueue);
+    }
+
+    public void registerClearCommand() {
+        exchanger.clearAllCommand();
+    }
 }
