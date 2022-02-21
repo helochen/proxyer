@@ -54,6 +54,7 @@ public class ByteDataExchanger {
     @Getter
     private Executor taskExecutor;
 
+    @Getter
     @Autowired
     private FakeCommandRegisterFactory factory;
 
@@ -306,13 +307,20 @@ public class ByteDataExchanger {
     synchronized public void tryRegisterRestartTask() {
         if (CatchGhostTaskPatch.getInstance().timeout()) {
             logger.info("抓鬼补充任务触发");
-            // 补充任务
-            Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
-            QueryTaskListCommand queryTaskListCommand = new QueryTaskListCommand();
-            queryTaskListCommand.addRefuseFilter(RefuseTaskListPopupCommand.createInstance(this));
-            taskQueue.offer(queryTaskListCommand);
+            if (CatchGhostTaskPatch.getInstance().jumpToAddGhostTask()) {
+                logger.info("抓鬼DEBUG信息：补充一次直接抓鬼请求");
+                factory.registerCatchGhost(1);
+            } else {
+                // 补充任务
+                logger.info("抓鬼DEBUG信息：补充一次抓鬼任务列表请求");
+                Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+                QueryTaskListCommand queryTaskListCommand = new QueryTaskListCommand();
+                queryTaskListCommand.addRefuseFilter(RefuseTaskListPopupCommand.createInstance(this));
+                taskQueue.offer(queryTaskListCommand);
 
-            this.addFakeCommand(taskQueue);
+                this.addFakeCommand(taskQueue);
+            }
+
         }
 
     }

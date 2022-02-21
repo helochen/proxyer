@@ -49,14 +49,14 @@ public class CatchGhostTaskPatch {
     public boolean timeout() {
         if (this.getTime() > 0 && System.currentTimeMillis() - this.getTime() > taskTimeOut) {
             this.setTime(System.currentTimeMillis());
-            this.reset.set(1);
+            this.reset.incrementAndGet();
             return true;
         }
         return false;
     }
 
     public boolean isBlock() {
-        return this.reset.get() == 1;
+        return this.reset.get() > 0;
     }
 
     public void reset() {
@@ -65,5 +65,9 @@ public class CatchGhostTaskPatch {
 
     public void forceBlock() {
         this.reset.set(1);
+    }
+
+    public boolean jumpToAddGhostTask() {
+        return this.reset.get() > 20;
     }
 }

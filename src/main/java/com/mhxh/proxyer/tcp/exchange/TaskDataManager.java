@@ -47,7 +47,6 @@ public class TaskDataManager {
                 }
                 if (next.equals(taskBean)) {
                     logger.info("任务注册：重复得抓鬼任务{}", taskBean.getNpcName());
-                    CatchGhostTaskPatch.getInstance().start();
                     if (taskBean.getTaskType() == 2) {
                         if (CatchGhostTaskPatch.getInstance().isBlock()) {
                             CatchGhostTaskPatch.getInstance().reset();
