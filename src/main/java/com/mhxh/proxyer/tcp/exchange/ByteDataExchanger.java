@@ -79,8 +79,10 @@ public class ByteDataExchanger {
 
 
     public void register(Channel local, Channel remote) {
-        localFastQuery.put(local, remote);
-        remoteFastQuery.put(remote, local);
+        if (!ObjectUtils.isEmpty(local) && !ObjectUtils.isEmpty(remote)) {
+            localFastQuery.put(local, remote);
+            remoteFastQuery.put(remote, local);
+        }
     }
 
     public Channel getLocalByRemote(Channel remote) {

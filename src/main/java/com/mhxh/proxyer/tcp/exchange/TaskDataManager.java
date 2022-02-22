@@ -102,7 +102,9 @@ public class TaskDataManager {
                             .setId(id).setMapId(mapId);
 
                     exchanger.registerFightWithNpcCommand(next);
-                    next.finish();
+                    synchronized (TaskDataManager.class) {
+                        next.finish();
+                    }
                     return true;
                 } catch (Exception ex) {
                     logger.error("{}, {}", npcDetail, ex.getMessage());
