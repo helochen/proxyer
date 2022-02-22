@@ -50,6 +50,7 @@ public class TaskDataManager {
                     if (taskBean.getTaskType() == 2) {
                         if (CatchGhostTaskPatch.getInstance().isBlock()) {
                             CatchGhostTaskPatch.getInstance().reset();
+                            exchanger.registerChangeMapFakeCommand("长安城");
                             exchanger.registerChangeMapFakeCommand(next.getMapName());
                         }
                     }
@@ -83,6 +84,7 @@ public class TaskDataManager {
      */
     public boolean complementTask(String npcDetail) {
         Iterator<ITaskBean> iterator = roleTasks.iterator();
+
         while (iterator.hasNext()) {
             ITaskBean next = iterator.next();
             if (npcDetail.contains(next.getNpcName())) {
