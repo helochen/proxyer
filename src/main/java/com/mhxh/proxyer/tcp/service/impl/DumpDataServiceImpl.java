@@ -112,7 +112,9 @@ public class DumpDataServiceImpl implements IDumpDataService {
                 if (taskDataManager.complementTask(npcDetail)) {
                     // 补充完成一个任务就可以了
                     logger.info("补充任务注册信息：{}", npcDetail);
-                    break;
+                } else {
+                    logger.info("地图怪物信息：{}", npcDetail);
+                    taskDataManager.registerNpcPosition(npcDetail);
                 }
             }
         }

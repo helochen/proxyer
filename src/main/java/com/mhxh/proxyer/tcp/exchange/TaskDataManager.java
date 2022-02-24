@@ -2,6 +2,7 @@ package com.mhxh.proxyer.tcp.exchange;
 
 import com.google.common.base.Splitter;
 import com.mhxh.proxyer.tcp.game.constants.DataSplitConstant;
+import com.mhxh.proxyer.tcp.game.constants.TaskConstants;
 import com.mhxh.proxyer.tcp.game.task.ITaskBean;
 import com.mhxh.proxyer.web.patch.CatchGhostTaskPatch;
 import org.slf4j.Logger;
@@ -114,5 +115,13 @@ public class TaskDataManager {
             }
         }
         return false;
+    }
+
+    public void registerNpcPosition(String npcDetail) {
+        if (npcDetail.contains(TaskConstants.NPC_MONSTER_NIANSHOU_)
+                || npcDetail.contains(TaskConstants.NPC_MASTER_FIRE)
+                || npcDetail.contains(TaskConstants.NPC_MONSTER_PANGNI)) {
+            logger.info("NPC位置查询：{}", npcDetail);
+        }
     }
 }
