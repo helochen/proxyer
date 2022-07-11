@@ -53,6 +53,18 @@ public class DumpDataServiceImpl implements IDumpDataService {
         }
     }
 
+    @Override
+    public void outputEncryptHexStrAndFormatStr(ByteBuf recordBuf, int type) throws Exception {
+        // TODO
+        try {
+
+        } catch (Exception e) {
+            logger.info("数据转换异常：{}", e.getMessage());
+        } finally {
+            ReferenceCountUtil.release(recordBuf);
+        }
+    }
+
 
     private void findTaskByReturnData(String gbk) {
 
@@ -112,6 +124,7 @@ public class DumpDataServiceImpl implements IDumpDataService {
                 if (taskDataManager.complementTask(npcDetail)) {
                     // 补充完成一个任务就可以了
                     logger.info("补充任务注册信息：{}", npcDetail);
+                    break;
                 } else {
                     logger.info("地图怪物信息：{}", npcDetail);
                     taskDataManager.registerNpcPosition(npcDetail);

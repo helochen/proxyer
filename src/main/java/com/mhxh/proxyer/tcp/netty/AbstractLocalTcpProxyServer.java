@@ -8,6 +8,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +31,12 @@ public abstract class AbstractLocalTcpProxyServer extends AbstractIdleService {
     private final EventLoopGroup workGroup;
 
     private final SocketAddress socketAddress;
+    @Getter
+    private final int core;
 
     public AbstractLocalTcpProxyServer(final String ip, final int listener, final int core) {
         logger.info("AbstractLocalTcpProxyServer listen port:{}", listener);
+        this.core = core;
         serverBootstrap = new ServerBootstrap();
 
         bossGroup = new NioEventLoopGroup(1);

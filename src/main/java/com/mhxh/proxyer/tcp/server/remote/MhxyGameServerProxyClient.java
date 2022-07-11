@@ -46,9 +46,13 @@ public class MhxyGameServerProxyClient extends AbstractLinkGameServerClient {
                             Channel local = exchanger.getLocalByRemote(channelHandlerContext.channel());
                             if (null != local) {
                                 local.writeAndFlush(byteBuf.retain());
-
                             }
                         }
+                    }
+
+                    @Override
+                    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+
                     }
                 });
             }
@@ -65,6 +69,13 @@ public class MhxyGameServerProxyClient extends AbstractLinkGameServerClient {
         try {
             client.startAsync();
             client.awaitRunning();
+            client.getChannel().closeFuture().addListener(ChannelFutureListener.CLOSE)
+                    .addListener((ChannelFutureListener) channelFuture -> {
+                        if (!client.isRunning()) {
+                            client.stopAsync();
+                            logger.error("代理服务器关闭...");
+                        }
+                    });
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 if (client.isRunning()) {
                     client.stopAsync();
@@ -74,7 +85,6 @@ public class MhxyGameServerProxyClient extends AbstractLinkGameServerClient {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
         return client.getChannel();
     }
 }

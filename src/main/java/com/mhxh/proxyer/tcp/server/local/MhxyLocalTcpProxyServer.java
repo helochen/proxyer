@@ -16,13 +16,12 @@ import io.netty.channel.*;
 import io.netty.util.ReferenceCountUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import java.nio.charset.Charset;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Component
+//@Component
 public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
 
 
