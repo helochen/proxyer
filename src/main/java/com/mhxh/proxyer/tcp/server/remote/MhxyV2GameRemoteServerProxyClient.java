@@ -28,7 +28,9 @@ public class MhxyV2GameRemoteServerProxyClient extends AbstractLinkGameServerCli
                 ChannelPipeline pipeline = channel.pipeline();
 
                 pipeline.addLast(new MyEncryptDelimiterBasedFrameDecorder())
-                        .addLast(new MyDataEncryptLoggerSimpleHandler(exchanger, ByteDataExchanger.SERVER_OF_REMOTE))
+                        .addLast(new MyDataEncryptLoggerSimpleHandler(exchanger
+                                , ByteDataExchanger.SERVER_OF_REMOTE
+                                , MhxyV2GameRemoteServerProxyClient.super.getPort()))
                         .addLast(new SimpleChannelInboundHandler<ByteBuf>() {
                             @Override
                             protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) throws Exception {
@@ -55,9 +57,10 @@ public class MhxyV2GameRemoteServerProxyClient extends AbstractLinkGameServerCli
             client.awaitRunning();
             client.getChannel().closeFuture().addListener(ChannelFutureListener.CLOSE)
                     .addListener((ChannelFutureListener) channelFuture -> {
-                        if (!client.isRunning()) {
+                        if (client.isRunning()) {
                             client.stopAsync();
-                            logger.error("代理服务器关闭...");
+                            client.awaitTerminated();
+                            logger.error("Channel使得代理服务器关闭...{}:{}", ip, port);
                         }
                     });
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {

@@ -34,7 +34,7 @@ public class DumpDataServiceImpl implements IDumpDataService {
 
 
     @Override
-    public void outputHexStrAndFormatStr(ByteBuf buf, int source) {
+    public void outputHexStrAndFormatStr(ByteBuf buf, int source, int port) {
         try {
             // 复制
             String gbk = buf.toString(Charset.forName("GBK"));
@@ -45,9 +45,9 @@ public class DumpDataServiceImpl implements IDumpDataService {
                     && !gbk.contains("频道")) {
                 String hexDump = ByteBufUtil.hexDump(buf);
                 this.findTaskByReturnData(gbk);
-                logger.info("\n{}->\t发送16进制数据=>{}," +
-                                "\n{}->\t发送GBK解析数据=> {}", from,
-                        hexDump, from, gbk);
+                logger.info("\n{}:{}->\t发送16进制数据=>{}," +
+                                "\n{}:{}->\t发送GBK解析数据=> {}", from, port,
+                        hexDump, from, port, gbk);
             } else {
                 logger.info("全局排除信息内容：{}", gbk);
             }
@@ -59,7 +59,7 @@ public class DumpDataServiceImpl implements IDumpDataService {
     }
 
     @Override
-    public void outputEncryptHexStrAndFormatStr(ByteBuf buf, int source) throws Exception {
+    public void outputEncryptHexStrAndFormatStr(ByteBuf buf, int source, int port) throws Exception {
         try {
             Map<String, String> decodeMap = encryptDictionary.originalEncodeMap;
             String gbkHex = buf.toString(Charset.forName("GBK"));
@@ -69,11 +69,11 @@ public class DumpDataServiceImpl implements IDumpDataService {
                 gbkHex = gbkHex.replaceAll(key, decodeMap.get(key));
             }
             String hexDump = ByteBufUtil.hexDump(buf);
-            logger.info("\n{}->\t发送16进制数据=>{},\n{}->\t发送GBK解析数据=> {}", from,
-                    hexDump, from, gbkHex);
+            logger.info("\n{}:{}->\t发送16进制数据=>{},\n{}:{}->\t发送GBK解析数据=> {}",
+                    from, port, hexDump, from, port, gbkHex);
 
         } catch (Exception e) {
-            logger.info("数据转换异常：源头：{} ,{}",source, e.getMessage());
+            logger.info("数据转换异常：源头：{} ,{}", source, e.getMessage());
         } finally {
             ReferenceCountUtil.release(buf);
         }

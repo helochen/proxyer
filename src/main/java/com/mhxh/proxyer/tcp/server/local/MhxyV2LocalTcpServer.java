@@ -25,7 +25,9 @@ public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
                 ChannelPipeline pipeline = channel.pipeline();
                 // 数据长度截取
                 pipeline.addLast(new MessageLengthFromatHandler())
-                        .addLast(new MyDataEncryptLoggerSimpleHandler(exchanger, ByteDataExchanger.SERVER_OF_LOCAL))
+                        .addLast(new MyDataEncryptLoggerSimpleHandler(exchanger
+                                , ByteDataExchanger.SERVER_OF_LOCAL
+                                , MhxyV2LocalTcpServer.super.getPort()))
                         // 处理数据发送逻辑
                         .addLast(new SimpleChannelInboundHandler<ByteBuf>() {
 
@@ -52,7 +54,7 @@ public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
 
                             @Override
                             public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-                                logger.info("关闭服务器{}", ctx.channel().id());
+                                logger.info("关闭本地服务器的链接->{}:{}", getIp(), getPort());
                                 Channel remote = exchanger.clearByLocal(ctx.channel());
                                 if (remote != null) {
                                     remote.close();

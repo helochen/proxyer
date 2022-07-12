@@ -65,7 +65,8 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
                 ChannelPipeline pipeline = channel.pipeline();
 
                 pipeline.addLast(new MyDataLoggerSimpleHandler(exchanger,
-                        ByteDataExchanger.SERVER_OF_LOCAL));
+                        ByteDataExchanger.SERVER_OF_LOCAL,
+                        MhxyLocalTcpProxyServer.super.getPort()));
 
                 pipeline.addLast(new SimpleChannelInboundHandler<ByteBuf>() {
 

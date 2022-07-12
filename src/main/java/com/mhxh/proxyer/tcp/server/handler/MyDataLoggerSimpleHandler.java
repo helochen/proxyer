@@ -16,11 +16,13 @@ public class MyDataLoggerSimpleHandler extends SimpleChannelInboundHandler<ByteB
 
     private ByteDataExchanger exchanger;
     private int type;
+    private int port;
 
-    public MyDataLoggerSimpleHandler(ByteDataExchanger exchanger, int type) {
+    public MyDataLoggerSimpleHandler(ByteDataExchanger exchanger, int type, int port) {
         super();
         this.exchanger = exchanger;
         this.type = type;
+        this.port = port;
 
     }
 
@@ -29,7 +31,7 @@ public class MyDataLoggerSimpleHandler extends SimpleChannelInboundHandler<ByteB
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf buf) {
         ByteBuf recordBuf = buf.retainedSlice();
         try {
-            exchanger.getTaskExecutor().execute(() -> exchanger.getDumpDataService().outputHexStrAndFormatStr(recordBuf, type));
+            exchanger.getTaskExecutor().execute(() -> exchanger.getDumpDataService().outputHexStrAndFormatStr(recordBuf, type, port));
         } catch (TaskRejectedException e) {
             logger.error("出现了奇怪的异常！！！！{}", e.getMessage());
             ReferenceCountUtil.release(recordBuf);

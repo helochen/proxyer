@@ -12,7 +12,7 @@ import io.netty.channel.*;
 
 public class MhxyGameServerProxyClient extends AbstractLinkGameServerClient {
 
-    private ByteBuf MAP_HOOK_HEADER = null;
+    private ByteBuf MAP_HOOK_HEADER;
 
     private final ByteDataExchanger exchanger;
 
@@ -37,7 +37,7 @@ public class MhxyGameServerProxyClient extends AbstractLinkGameServerClient {
 
                 pipeline.addLast(new MyDelimiterBasedFrameDecoder());
 
-                pipeline.addLast(new MyDataLoggerSimpleHandler(exchanger, ByteDataExchanger.SERVER_OF_REMOTE));
+                pipeline.addLast(new MyDataLoggerSimpleHandler(exchanger, ByteDataExchanger.SERVER_OF_REMOTE, MhxyGameServerProxyClient.super.getPort()));
 
                 pipeline.addLast(new SimpleChannelInboundHandler<ByteBuf>() {
                     @Override

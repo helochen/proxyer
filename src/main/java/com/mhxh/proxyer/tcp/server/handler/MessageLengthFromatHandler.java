@@ -35,10 +35,6 @@ public class MessageLengthFromatHandler extends ByteToMessageDecoder {
         if (in.readableBytes() > PROTO_HEAD_LENGTH) {
             in.markReaderIndex();
             int length = in.readByte() & 0xff;
-            if (length <= 0) {
-                logger.error("消息长度分包异常......length:{}", length);
-                ctx.channel().close();
-            }
 
             if (in.readableBytes() >= length) {
                 in.resetReaderIndex();

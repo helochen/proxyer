@@ -30,6 +30,11 @@ public abstract class AbstractLinkGameServerClient extends AbstractIdleService {
 
     @Getter
     private Channel channel;
+    @Getter
+    private String ip;
+    @Getter
+    private int port;
+
 
     private final Bootstrap clientBootstrap;
     private final EventLoopGroup loopGroup;
@@ -41,6 +46,8 @@ public abstract class AbstractLinkGameServerClient extends AbstractIdleService {
         clientBootstrap = new Bootstrap();
         loopGroup = new NioEventLoopGroup(core);
         socketAddress = new InetSocketAddress(ip, port);
+        this.ip = ip;
+        this.port = port;
     }
 
     protected abstract ChannelHandler channelHandler();
@@ -77,7 +84,10 @@ public abstract class AbstractLinkGameServerClient extends AbstractIdleService {
                 }, 5L, TimeUnit.SECONDS);
             }
         }).sync().channel();
-        channel.closeFuture().addListener(ChannelFutureListener.CLOSE).addListener((ChannelFutureListener) channelFuture -> logger.error("远程游戏服务器TCP链接被关闭....."));
+        channel.closeFuture().addListener(ChannelFutureListener.CLOSE)
+                .addListener((ChannelFutureListener) channelFuture ->
+                        logger.error("{}：远程游戏服务器TCP链接被关闭.....{}:{}",
+                                AbstractLinkGameServerClient.class, ip, port));
         logger.info("connect to 远程游戏服务器成功......");
     }
 }

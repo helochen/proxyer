@@ -15,11 +15,13 @@ public class MyDataEncryptLoggerSimpleHandler extends SimpleChannelInboundHandle
 
     private ByteDataExchanger exchanger;
     private int type;
+    private int port;
 
-    public MyDataEncryptLoggerSimpleHandler(ByteDataExchanger exchanger, int type) {
+    public MyDataEncryptLoggerSimpleHandler(ByteDataExchanger exchanger, int type, int port) {
         super();
         this.exchanger = exchanger;
         this.type = type;
+        this.port = port;
 
     }
 
@@ -29,7 +31,7 @@ public class MyDataEncryptLoggerSimpleHandler extends SimpleChannelInboundHandle
         try {
             exchanger.getTaskExecutor().execute(() -> {
                 try {
-                    exchanger.getDumpDataService().outputEncryptHexStrAndFormatStr(recordBuf, type);
+                    exchanger.getDumpDataService().outputEncryptHexStrAndFormatStr(recordBuf, type, port);
                 } catch (Exception e) {
                     logger.error("处理数据异常:{}", e.getMessage());
                 }
