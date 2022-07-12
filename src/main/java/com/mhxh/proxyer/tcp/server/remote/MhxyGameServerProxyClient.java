@@ -49,11 +49,6 @@ public class MhxyGameServerProxyClient extends AbstractLinkGameServerClient {
                             }
                         }
                     }
-
-                    @Override
-                    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-
-                    }
                 });
             }
         };
