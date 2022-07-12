@@ -3,8 +3,8 @@ package com.mhxh.proxyer.tcp.server.remote;
 
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.netty.AbstractLinkGameServerClient;
-import com.mhxh.proxyer.tcp.server.handler.MessageLengthFromatHandler;
-import com.mhxh.proxyer.tcp.server.handler.MyDataLoggerSimpleHandler;
+import com.mhxh.proxyer.tcp.server.handler.MyDataEncryptLoggerSimpleHandler;
+import com.mhxh.proxyer.tcp.server.handler.MyEncryptDelimiterBasedFrameDecorder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 
@@ -27,8 +27,8 @@ public class MhxyV2GameRemoteServerProxyClient extends AbstractLinkGameServerCli
             protected void initChannel(Channel channel) throws Exception {
                 ChannelPipeline pipeline = channel.pipeline();
 
-                pipeline.addLast(new MessageLengthFromatHandler())
-                        .addLast(new MyDataLoggerSimpleHandler(exchanger, ByteDataExchanger.SERVER_OF_REMOTE))
+                pipeline.addLast(new MyEncryptDelimiterBasedFrameDecorder())
+                        .addLast(new MyDataEncryptLoggerSimpleHandler(exchanger, ByteDataExchanger.SERVER_OF_REMOTE))
                         .addLast(new SimpleChannelInboundHandler<ByteBuf>() {
                             @Override
                             protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) throws Exception {

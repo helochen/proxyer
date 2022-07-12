@@ -12,6 +12,10 @@ public class EncryptDictionary {
 
 
     public Map<String, String> encodeMap = new ConcurrentHashMap<>();
+    /**
+     * 原始的字符
+     */
+    public Map<String, String> originalEncodeMap = new ConcurrentHashMap<>();
 
 
     public Map<String, String> decodeMap = new ConcurrentHashMap<>();
@@ -44,6 +48,7 @@ public class EncryptDictionary {
         for (int i = 0; i < encode.length; i++) {
             encodeMap.put(ByteBufUtil.hexDump(encode[i].getBytes(Charset.forName("GBK"))), ByteBufUtil.hexDump(decode[i].getBytes(Charset.forName("GBK"))));
             decodeMap.put(ByteBufUtil.hexDump(decode[i].getBytes(Charset.forName("GBK"))), ByteBufUtil.hexDump(encode[i].getBytes(Charset.forName("GBK"))));
+            originalEncodeMap.put(encode[i], decode[i]);
         }
     }
 }

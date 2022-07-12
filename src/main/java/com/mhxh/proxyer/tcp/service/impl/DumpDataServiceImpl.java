@@ -61,21 +61,19 @@ public class DumpDataServiceImpl implements IDumpDataService {
     @Override
     public void outputEncryptHexStrAndFormatStr(ByteBuf buf, int source) throws Exception {
         try {
-            Map<String, String> decodeMap = encryptDictionary.encodeMap;
+            Map<String, String> decodeMap = encryptDictionary.originalEncodeMap;
             String gbkHex = buf.toString(Charset.forName("GBK"));
             String from = source == ByteDataExchanger.SERVER_OF_LOCAL ?
                     "本地数据" : "服务器数据";
             for (String key : decodeMap.keySet()) {
                 gbkHex = gbkHex.replaceAll(key, decodeMap.get(key));
             }
-
-            byte[] hexBytes = ByteBufUtil.decodeHexDump(gbkHex);
-            String result = new String(hexBytes, Charset.forName("GBK"));
+            String hexDump = ByteBufUtil.hexDump(buf);
             logger.info("\n{}->\t发送16进制数据=>{},\n{}->\t发送GBK解析数据=> {}", from,
-                    result, from, gbkHex);
+                    hexDump, from, gbkHex);
 
         } catch (Exception e) {
-            logger.info("数据转换异常：{}", e.getMessage());
+            logger.info("数据转换异常：源头：{} ,{}",source, e.getMessage());
         } finally {
             ReferenceCountUtil.release(buf);
         }
