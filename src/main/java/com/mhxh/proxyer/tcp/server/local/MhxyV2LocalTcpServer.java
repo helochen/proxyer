@@ -4,14 +4,9 @@ import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.netty.AbstractLocalTcpProxyServer;
 import com.mhxh.proxyer.tcp.server.handler.MessageLengthFromatHandler;
 import com.mhxh.proxyer.tcp.server.handler.MyDataEncryptLoggerSimpleHandler;
-import com.mhxh.proxyer.tcp.server.remote.MhxyGameServerProxyClient;
+import com.mhxh.proxyer.tcp.server.remote.MhxyV2GameRemoteServerProxyClient;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 
 public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
 
@@ -31,13 +26,14 @@ public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
                 // 数据长度截取
                 pipeline.addLast(new MessageLengthFromatHandler())
                         .addLast(new MyDataEncryptLoggerSimpleHandler(exchanger, ByteDataExchanger.SERVER_OF_LOCAL))
+                        // 处理数据发送逻辑
                         .addLast(new SimpleChannelInboundHandler<ByteBuf>() {
 
                             @Override
                             public void channelActive(ChannelHandlerContext ctx) throws Exception {
                                 // 构建链接游戏服务器的链接对象
                                 logger.info("服务器信息注册.{}", ctx.channel().id());
-                                Channel clientToRemoteGameServer = MhxyGameServerProxyClient.createInstance(
+                                Channel clientToRemoteGameServer = MhxyV2GameRemoteServerProxyClient.createInstance(
                                         MhxyV2LocalTcpServer.super.getIp()
                                         , MhxyV2LocalTcpServer.super.getPort(), MhxyV2LocalTcpServer.super.getCore(), exchanger);
                                 exchanger.register(ctx.channel(), clientToRemoteGameServer);
