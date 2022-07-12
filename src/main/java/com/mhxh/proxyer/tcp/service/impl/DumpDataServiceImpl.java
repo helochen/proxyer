@@ -1,6 +1,7 @@
 package com.mhxh.proxyer.tcp.service.impl;
 
 
+import com.mhxh.proxyer.decode.EncryptDictionary;
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.exchange.TaskDataManager;
 import com.mhxh.proxyer.tcp.game.constants.DataSplitConstant;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.Charset;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 @Service
@@ -24,6 +26,9 @@ public class DumpDataServiceImpl implements IDumpDataService {
 
     @Autowired
     private TaskDataManager taskDataManager;
+
+    @Autowired
+    private EncryptDictionary encryptDictionary;
 
     private static final Logger logger = LoggerFactory.getLogger(IDumpDataService.class);
 
@@ -54,14 +59,25 @@ public class DumpDataServiceImpl implements IDumpDataService {
     }
 
     @Override
-    public void outputEncryptHexStrAndFormatStr(ByteBuf recordBuf, int type) throws Exception {
-        // TODO
+    public void outputEncryptHexStrAndFormatStr(ByteBuf buf, int source) throws Exception {
         try {
+            Map<String, String> decodeMap = encryptDictionary.encodeMap;
+            String gbkHex = buf.toString(Charset.forName("GBK"));
+            String from = source == ByteDataExchanger.SERVER_OF_LOCAL ?
+                    "本地数据" : "服务器数据";
+            for (String key : decodeMap.keySet()) {
+                gbkHex = gbkHex.replaceAll(key, decodeMap.get(key));
+            }
+
+            byte[] hexBytes = ByteBufUtil.decodeHexDump(gbkHex);
+            String result = new String(hexBytes, Charset.forName("GBK"));
+            logger.info("\n{}->\t发送16进制数据=>{},\n{}->\t发送GBK解析数据=> {}", from,
+                    result, from, gbkHex);
 
         } catch (Exception e) {
             logger.info("数据转换异常：{}", e.getMessage());
         } finally {
-            ReferenceCountUtil.release(recordBuf);
+            ReferenceCountUtil.release(buf);
         }
     }
 

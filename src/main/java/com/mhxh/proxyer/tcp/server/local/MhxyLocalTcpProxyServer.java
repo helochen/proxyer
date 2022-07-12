@@ -38,7 +38,7 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
     @Value("${game.server.port}")
     private int gamePort;
 
-    private int core;
+    private final int core;
 
     public MhxyLocalTcpProxyServer(@Value("${local.server.ip}") String ip
             , @Value("${local.server.port}") int listener
@@ -69,7 +69,7 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
 
                 pipeline.addLast(new SimpleChannelInboundHandler<ByteBuf>() {
 
-                    private AtomicInteger count = new AtomicInteger(2);
+                    private final AtomicInteger count = new AtomicInteger(2);
 
                     @Override
                     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -125,21 +125,23 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
                                         } finally {
                                             ReferenceCountUtil.release(proxyCmd);
                                         }
-                                    }else{
+                                    } else {
                                         // 如果长期没有任务一直在点抓鬼，开始抓鬼
                                         exchanger.tryRegisterRestartTask();
                                     }
                                 }
 
                             }
-                            if (!isProxy) {
-                                remoteChannel.writeAndFlush(byteBuf.retain());
+                            try {
+                                if (!isProxy) {
+                                    remoteChannel.writeAndFlush(byteBuf.retain());
+                                }
+                                if (count.decrementAndGet() == 0) {
+                                    channel.pipeline().addFirst(new MyDelimiterBasedFrameDecoder());
+                                }
+                            } finally {
+                                readBuf.release();
                             }
-
-                            if (count.decrementAndGet() == 0) {
-                                channel.pipeline().addFirst(new MyDelimiterBasedFrameDecoder());
-                            }
-                            readBuf.release();
                         }
 
                     }

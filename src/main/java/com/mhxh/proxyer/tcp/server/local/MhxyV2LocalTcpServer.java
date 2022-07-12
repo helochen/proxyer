@@ -2,14 +2,20 @@ package com.mhxh.proxyer.tcp.server.local;
 
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.netty.AbstractLocalTcpProxyServer;
+import com.mhxh.proxyer.tcp.server.handler.MessageLengthFromatHandler;
+import com.mhxh.proxyer.tcp.server.handler.MyDataEncryptLoggerSimpleHandler;
+import com.mhxh.proxyer.tcp.server.remote.MhxyGameServerProxyClient;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.SimpleChannelInboundHandler;
 
 public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
 
-    private ByteDataExchanger exchanger;
+    private final ByteDataExchanger exchanger;
 
     public MhxyV2LocalTcpServer(String ip, int listener, int core, ByteDataExchanger exchanger) {
         super(ip, listener, core);
@@ -22,9 +28,43 @@ public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
             @Override
             protected void initChannel(Channel channel) throws Exception {
                 ChannelPipeline pipeline = channel.pipeline();
-                // TODO 数据长度截取
+                // 数据长度截取
+                pipeline.addLast(new MessageLengthFromatHandler())
+                        .addLast(new MyDataEncryptLoggerSimpleHandler(exchanger, ByteDataExchanger.SERVER_OF_LOCAL))
+                        .addLast(new SimpleChannelInboundHandler<ByteBuf>() {
 
+                            @Override
+                            public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                                // 构建链接游戏服务器的链接对象
+                                logger.info("服务器信息注册.{}", ctx.channel().id());
+                                Channel clientToRemoteGameServer = MhxyGameServerProxyClient.createInstance(
+                                        MhxyV2LocalTcpServer.super.getIp()
+                                        , MhxyV2LocalTcpServer.super.getPort(), MhxyV2LocalTcpServer.super.getCore(), exchanger);
+                                exchanger.register(ctx.channel(), clientToRemoteGameServer);
+                                super.channelActive(ctx);
+                            }
 
+                            @Override
+                            protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
+                                Channel localChannel = channelHandlerContext.channel();
+
+                                Channel remoteChannel = exchanger.getRemoteByLocal(localChannel);
+                                if (null != remoteChannel) {
+                                    remoteChannel.writeAndFlush(byteBuf.retain());
+                                }
+                            }
+
+                            @Override
+                            public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+                                logger.info("关闭服务器{}", ctx.channel().id());
+                                Channel remote = exchanger.clearByLocal(ctx.channel());
+                                if (remote != null) {
+                                    remote.close();
+                                }
+                                super.channelInactive(ctx);
+                            }
+                        })
+                ;
             }
         };
     }

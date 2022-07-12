@@ -33,10 +33,16 @@ public abstract class AbstractLocalTcpProxyServer extends AbstractIdleService {
     private final SocketAddress socketAddress;
     @Getter
     private final int core;
+    @Getter
+    private final String ip;
+    @Getter
+    private final int port;
 
     public AbstractLocalTcpProxyServer(final String ip, final int listener, final int core) {
         logger.info("AbstractLocalTcpProxyServer listen port:{}", listener);
         this.core = core;
+        this.ip = ip;
+        this.port = listener;
         serverBootstrap = new ServerBootstrap();
 
         bossGroup = new NioEventLoopGroup(1);

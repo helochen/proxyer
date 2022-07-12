@@ -1,6 +1,7 @@
 package com.mhxh.proxyer;
 
 import com.mhxh.proxyer.tcp.server.local.MhxyLocalTcpProxyServer;
+import com.mhxh.proxyer.tcp.server.multi.MultiServerCreator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -13,21 +14,10 @@ public class ProxyerApplication {
 
         ConfigurableApplicationContext context = SpringApplication.run(ProxyerApplication.class, args);
 
-        MhxyLocalTcpProxyServer server = context.getBean(MhxyLocalTcpProxyServer.class);
+        MultiServerCreator serverCreator = context.getBean(MultiServerCreator.class);
 
         // 初始化
-        try {
-            server.startAsync();
-            server.awaitRunning();
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                if (server.isRunning()) {
-                    server.stopAsync();
-                    server.awaitTerminated();
-                }
-            }));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        serverCreator.runMultiServer();
     }
 
 }
