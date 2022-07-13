@@ -2,8 +2,32 @@ package com.mhxh.proxyer.tcp.exchange;
 
 import com.mhxh.proxyer.fake.FakeCommandRegisterFactory;
 import com.mhxh.proxyer.fake.command.base.IFormatCommand;
-import com.mhxh.proxyer.fake.command.local.*;
-import com.mhxh.proxyer.fake.command.remote.refuse.*;
+import com.mhxh.proxyer.fake.command.local.BuyFlyTicketItemCommand;
+import com.mhxh.proxyer.fake.command.local.BuySystemItemCommand;
+import com.mhxh.proxyer.fake.command.local.ChangAnNpcFlyToSectCommand;
+import com.mhxh.proxyer.fake.command.local.FastUseSkillToXianlingDianpuCommand;
+import com.mhxh.proxyer.fake.command.local.QueryTaskListCommand;
+import com.mhxh.proxyer.fake.command.local.RequestCommitQinglongBuyItemCommand;
+import com.mhxh.proxyer.fake.command.local.RequestQinglongTaskInfoCommand;
+import com.mhxh.proxyer.fake.command.local.ResponseQingLongTaskItemCommand;
+import com.mhxh.proxyer.fake.command.local.RoleFightWithGhostForSureCommand;
+import com.mhxh.proxyer.fake.command.local.RoleMoveToTargetCommand;
+import com.mhxh.proxyer.fake.command.local.RoleRequestGhostFightCommand;
+import com.mhxh.proxyer.fake.command.local.RoleWalkingRunningCommand;
+import com.mhxh.proxyer.fake.command.local.RoleWalkingStopCommand;
+import com.mhxh.proxyer.fake.command.local.UseBoxItemCommand;
+import com.mhxh.proxyer.fake.command.local.UseFlyItemFlayToMapCommand;
+import com.mhxh.proxyer.fake.command.local.UseItemFlushCommand;
+import com.mhxh.proxyer.fake.command.local.UseNpcFlyToJiangNanMapCommand;
+import com.mhxh.proxyer.fake.command.local.UserMultiFlagFlyToDestinationSayYesCommand;
+import com.mhxh.proxyer.fake.command.remote.refuse.IRefuseFilter;
+import com.mhxh.proxyer.fake.command.remote.refuse.RefuseCmdJingwaiFlagPopupCommand;
+import com.mhxh.proxyer.fake.command.remote.refuse.RefuseContinueCatchGhostPopupCommand;
+import com.mhxh.proxyer.fake.command.remote.refuse.RefuseFightWithGhostPopupCommand;
+import com.mhxh.proxyer.fake.command.remote.refuse.RefuseFlyTicketPopupCommand;
+import com.mhxh.proxyer.fake.command.remote.refuse.RefuseQingLongTaskPopupCommand;
+import com.mhxh.proxyer.fake.command.remote.refuse.RefuseSkillXianLingDianpuPoppupCommand;
+import com.mhxh.proxyer.fake.command.remote.refuse.RefuseTaskListPopupCommand;
 import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendCommandRuleConstants;
 import com.mhxh.proxyer.tcp.game.constants.MapConstants;
 import com.mhxh.proxyer.tcp.game.constants.SectMapConstants;
@@ -76,7 +100,10 @@ public class ByteDataExchanger {
      */
     private final Map<Channel, Channel> localFastQuery = new ConcurrentHashMap<>();
     private final Map<Channel, Channel> remoteFastQuery = new ConcurrentHashMap<>();
-
+    /**
+     * 用于直接给远程服务器发送信息
+     */
+    private final Map<String, Channel> pickChannel = new ConcurrentHashMap<>();
 
     public void register(Channel local, Channel remote) {
         if (!ObjectUtils.isEmpty(local) && !ObjectUtils.isEmpty(remote)) {
@@ -331,6 +358,14 @@ public class ByteDataExchanger {
         tasks.clear();
         for (IRefuseFilter filter : filters) {
             filter.reset();
+        }
+    }
+
+    public void registerCode(String code, Channel channel) {
+        final Channel remoteByLocal = getRemoteByLocal(channel);
+        if (null != remoteByLocal) {
+            pickChannel.put(code, remoteByLocal);
+            logger.info("注册角色ID:{}与远程链接", code);
         }
     }
 }

@@ -27,8 +27,6 @@ public class DumpDataServiceImpl implements IDumpDataService {
     @Autowired
     private TaskDataManager taskDataManager;
 
-    @Autowired
-    private EncryptDictionary encryptDictionary;
 
     private static final Logger logger = LoggerFactory.getLogger(IDumpDataService.class);
 
@@ -61,16 +59,13 @@ public class DumpDataServiceImpl implements IDumpDataService {
     @Override
     public void outputEncryptHexStrAndFormatStr(ByteBuf buf, int source, int port) throws Exception {
         try {
-            Map<String, String> encodeMap = encryptDictionary.encodeMap;
             String hexDump = ByteBufUtil.hexDump(buf);
 
             String from = source == ByteDataExchanger.SERVER_OF_LOCAL ?
                     "本地数据" : "服务器数据";
-            for (String key : encodeMap.keySet()) {
-                hexDump = hexDump.replaceAll(key, encodeMap.get(key));
-            }
-            byte[] bytes= ByteBufUtil.decodeHexDump(hexDump);
-            String gbkHex = new String(bytes , Charset.forName("GBK"));
+            hexDump = EncryptDictionary.DecodeEncryptString(hexDump);
+            byte[] bytes = ByteBufUtil.decodeHexDump(hexDump);
+            String gbkHex = new String(bytes, Charset.forName("GBK"));
 
             logger.info("\n{}:{}->\t发送16进制数据=>{},\n{}:{}->\t发送GBK解析数据=> {}",
                     from, port, hexDump, from, port, gbkHex);

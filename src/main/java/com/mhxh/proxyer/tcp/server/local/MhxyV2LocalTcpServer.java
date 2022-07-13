@@ -2,13 +2,17 @@ package com.mhxh.proxyer.tcp.server.local;
 
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.netty.AbstractLocalTcpProxyServer;
+import com.mhxh.proxyer.tcp.server.handler.ChannelRegisterIdentifySimpleHandler;
 import com.mhxh.proxyer.tcp.server.handler.MessageLengthFromatHandler;
 import com.mhxh.proxyer.tcp.server.handler.MyDataEncryptLoggerSimpleHandler;
 import com.mhxh.proxyer.tcp.server.remote.MhxyV2GameRemoteServerProxyClient;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.*;
-
-import java.nio.charset.Charset;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.SimpleChannelInboundHandler;
 
 public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
 
@@ -27,6 +31,7 @@ public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
                 ChannelPipeline pipeline = channel.pipeline();
                 // 数据长度截取
                 pipeline.addLast(new MessageLengthFromatHandler())
+                        .addLast(new ChannelRegisterIdentifySimpleHandler(exchanger))
                         .addLast(new MyDataEncryptLoggerSimpleHandler(exchanger
                                 , ByteDataExchanger.SERVER_OF_LOCAL
                                 , MhxyV2LocalTcpServer.super.getPort()))
@@ -63,8 +68,7 @@ public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
                                 }
                                 super.channelInactive(ctx);
                             }
-                        })
-                ;
+                        });
             }
         };
     }
