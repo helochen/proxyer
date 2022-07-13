@@ -35,12 +35,9 @@ public class MessageLengthFromatHandler extends ByteToMessageDecoder {
         if (in.readableBytes() > PROTO_HEAD_LENGTH) {
             in.markReaderIndex();
             int length = in.readByte() & 0xff;
-
-            if (in.readableBytes() >= length) {
-                in.resetReaderIndex();
+            in.resetReaderIndex();
+            if (in.readableBytes() >= length + 4) {
                 out.add(in.readRetainedSlice(length + 4));
-            } else {
-                in.resetReaderIndex();
             }
         }
     }

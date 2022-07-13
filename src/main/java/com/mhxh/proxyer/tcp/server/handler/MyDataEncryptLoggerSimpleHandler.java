@@ -13,9 +13,9 @@ public class MyDataEncryptLoggerSimpleHandler extends SimpleChannelInboundHandle
 
     private static final Logger logger = LoggerFactory.getLogger(MyDataEncryptLoggerSimpleHandler.class);
 
-    private ByteDataExchanger exchanger;
-    private int type;
-    private int port;
+    private final ByteDataExchanger exchanger;
+    private final int type;
+    private final int port;
 
     public MyDataEncryptLoggerSimpleHandler(ByteDataExchanger exchanger, int type, int port) {
         super();
@@ -29,13 +29,7 @@ public class MyDataEncryptLoggerSimpleHandler extends SimpleChannelInboundHandle
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf buf) throws Exception {
         ByteBuf recordBuf = buf.retainedSlice();
         try {
-            exchanger.getTaskExecutor().execute(() -> {
-                try {
-                    exchanger.getDumpDataService().outputEncryptHexStrAndFormatStr(recordBuf, type, port);
-                } catch (Exception e) {
-                    logger.error("处理数据异常:{}", e.getMessage());
-                }
-            });
+            exchanger.getDumpDataService().outputEncryptHexStrAndFormatStr(recordBuf, type, port);
         } catch (TaskRejectedException e) {
             logger.error("出现了奇怪的异常！！！！{}", e.getMessage());
         }

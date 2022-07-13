@@ -8,6 +8,8 @@ import com.mhxh.proxyer.tcp.server.remote.MhxyV2GameRemoteServerProxyClient;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 
+import java.nio.charset.Charset;
+
 public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
 
     private final ByteDataExchanger exchanger;
