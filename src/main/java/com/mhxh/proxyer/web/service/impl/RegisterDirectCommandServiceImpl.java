@@ -1,7 +1,6 @@
 package com.mhxh.proxyer.web.service.impl;
 
-import com.mhxh.proxyer.decode.EncryptDictionary;
-import com.mhxh.proxyer.fake.command.v2.local.ChangeMapV2Command;
+import com.mhxh.proxyer.fake.command.v2.local.LocalChangeMapV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalSendWalkingPixelV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalSendWalkingV2Command;
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
@@ -16,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.nio.charset.Charset;
 
 /**
  * file description:
@@ -51,10 +48,10 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
 
             final byte[] bytesRunPixel = ByteBufUtil.decodeHexDump(hexRunPixel);
             logger.info("虚拟命令：{},{}", hexRun, hexRunPixel);
-            final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(bytesRun.length );
+            final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(bytesRun.length + bytesRunPixel.length);
             try {
                 buffer.writeBytes(bytesRun);
-                //buffer.writeBytes(bytesRunPixel);
+                buffer.writeBytes(bytesRunPixel);
                 channel.writeAndFlush(buffer.retain());
             } finally {
                 ReferenceCountUtil.release(buffer);
@@ -63,15 +60,16 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
     }
 
     @Override
-    public void changeMap() {
-        final Channel channel = byteDataExchanger.queryChannelById("30721");
+    public void changeMap(int dst, String id) {
+        final Channel channel = byteDataExchanger.queryChannelById(id);
         if (channel != null) {
             long time = System.currentTimeMillis() / 1000;
-            ChangeMapV2Command command = new ChangeMapV2Command();
+            LocalChangeMapV2Command command = new
+                    LocalChangeMapV2Command(LocalSendV2CommandRuleConstants.ROLE_CHANGE_MAP_DIRECT[dst]);
             String hexRun = command.format(String.valueOf(time), null);
-            logger.info("虚拟命令：{},{}", hexRun);
+            logger.info("虚拟命令：{}", hexRun);
             final byte[] bytesRunPixel = ByteBufUtil.decodeHexDump(hexRun);
-            final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(bytesRunPixel.length );
+            final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(bytesRunPixel.length);
             try {
                 buffer.writeBytes(bytesRunPixel);
                 channel.writeAndFlush(buffer.retain());

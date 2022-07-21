@@ -10,15 +10,17 @@ import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendV2CommandRuleConstants;
  * @date 2022/7/21
  * @project proxyer
  **/
-public class ChangeMapV2Command extends LocalBaseV2Command {
+public class LocalChangeMapV2Command extends LocalBaseV2Command {
 
+    private final String destination;
 
-    public ChangeMapV2Command() {
+    public LocalChangeMapV2Command(String destination) {
         super(LocalSendV2CommandRuleConstants.ROLE_CHANGE_MAP_GBK_V2_HEX_HEAD, LocalSendV2CommandRuleConstants.ROLE_CHANGE_MAP_GBK_V2);
+        this.destination = destination;
     }
 
     @Override
     protected String innerFormat(String time) {
-        return String.format(getPattern(), time);
+        return String.format(getPattern(), destination, time);
     }
 }

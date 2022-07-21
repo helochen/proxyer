@@ -22,14 +22,14 @@ public class LocalCommandV2QueueController {
     private IRegisterDirectCommandService directCommandService;
 
     @GetMapping("goto")
-    public String gotoXY(@RequestParam("x")int x , @RequestParam("y")int y, @RequestParam("id")String id){
-        directCommandService.gotoXY(x, y ,id);
+    public String gotoXY(@RequestParam("x") int x, @RequestParam("y") int y, @RequestParam("id") String id) {
+        directCommandService.gotoXY(x, y, id);
         return "success";
     }
 
     @GetMapping("change-map")
-    public String changeMap() {
-        directCommandService.changeMap();
+    public String changeMap(@RequestParam("dst") int dst, @RequestParam("id") String id) {
+        directCommandService.changeMap(dst , id);
         return "success";
     }
 }

@@ -1,4 +1,4 @@
-package com.mhxh.proxyer.fake.command.remote.refuse;
+package com.mhxh.proxyer.fake.command.v1.remote.refuse;
 
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import io.netty.buffer.ByteBuf;
