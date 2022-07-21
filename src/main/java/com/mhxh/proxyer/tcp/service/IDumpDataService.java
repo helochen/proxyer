@@ -7,5 +7,5 @@ public interface IDumpDataService extends IBaseService {
 
     void outputHexStrAndFormatStr(ByteBuf buf, int src, int port);
 
-    void outputEncryptHexStrAndFormatStr(ByteBuf recordBuf, int type, int port) throws Exception;
+    void outputEncryptHexStrAndFormatStr(ByteBuf recordBuf, int type, int port);
 }

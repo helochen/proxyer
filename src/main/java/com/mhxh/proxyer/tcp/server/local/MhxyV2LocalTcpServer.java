@@ -30,18 +30,19 @@ public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
             protected void initChannel(Channel channel) throws Exception {
                 ChannelPipeline pipeline = channel.pipeline();
                 // 数据长度截取
-                pipeline.addLast(new MessageLengthFromatHandler())
-                        .addLast(new ChannelRegisterIdentifySimpleHandler(exchanger))
-                        .addLast(new MyDataEncryptLoggerSimpleHandler(exchanger
-                                , ByteDataExchanger.SERVER_OF_LOCAL
-                                , MhxyV2LocalTcpServer.super.getPort()))
+                pipeline.addLast(new MessageLengthFromatHandler());
+                if (getPort() == 8084) {
+                    pipeline.addLast(new ChannelRegisterIdentifySimpleHandler(exchanger));
+                }
+                pipeline.addLast(new MyDataEncryptLoggerSimpleHandler(exchanger
+                        , ByteDataExchanger.SERVER_OF_LOCAL
+                        , MhxyV2LocalTcpServer.super.getPort()))
                         // 处理数据发送逻辑
                         .addLast(new SimpleChannelInboundHandler<ByteBuf>() {
-
                             @Override
                             public void channelActive(ChannelHandlerContext ctx) throws Exception {
                                 // 构建链接游戏服务器的链接对象
-                                logger.info("服务器信息注册.{}", ctx.channel().id());
+                                logger.info("端口：{}服务器信息注册.{}", getPort(), ctx.channel().id());
                                 Channel clientToRemoteGameServer = MhxyV2GameRemoteServerProxyClient.createInstance(
                                         MhxyV2LocalTcpServer.super.getIp()
                                         , MhxyV2LocalTcpServer.super.getPort(), MhxyV2LocalTcpServer.super.getCore(), exchanger);

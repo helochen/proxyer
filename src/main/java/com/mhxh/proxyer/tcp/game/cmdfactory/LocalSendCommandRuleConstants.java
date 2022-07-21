@@ -64,18 +64,11 @@ public class LocalSendCommandRuleConstants {
      */
     public static final String ROLE_WALK_TO_DESTINATION_GBK = "1001*-*do local ret={[\"y\"]=%s,[\"x\"]=%s,[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
 
-    public static final String ROLE_WALK_TO_DESTINATION_V2_HEX_HEAD = "0080cb91da0097";
-
-    public static final String ROLE_WALK_TO_DESTINATION_GBK_V2 = "1001*-*do local ret={[\"y\"]=%s,[\"x\"]=%s} return ret end*-*%s";
 
     /**
      * 行走过程
      */
     public static final String ROLE_WALKING_RUNNING_GBK = "1002*-*do local ret={[\"x\"]=%s,[\"方向\"]=1,[\"类型\"]=\"行走\",[\"y\"]=%s,[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
-
-    public static final String ROLE_WALKING_RUNNING_V2_HEX_HEAD = "0080cb91da00a3";
-
-    public static final String ROLE_WALKING_RUNNING_GBK_V2 = "1002*-*do local ret={[\"y\"]=%s,[\"x\"]=%s} return ret end*-*%s";
 
     public static final String ROLE_WALKING_STOPPING_GBK = "1002*-*do local ret={[\"x\"]=%s,[\"方向\"]=1,[\"类型\"]=\"停止\",[\"y\"]=%s,[\"时间\"]=%s,[\"数据验证\"]=\"%s\"} return ret end";
 

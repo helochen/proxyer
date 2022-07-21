@@ -1,8 +1,8 @@
 package com.mhxh.proxyer.fake;
 
-import com.mhxh.proxyer.fake.command.base.IFormatCommand;
-import com.mhxh.proxyer.fake.command.local.*;
-import com.mhxh.proxyer.fake.command.remote.refuse.*;
+import com.mhxh.proxyer.fake.command.v1.base.IFormatCommand;
+import com.mhxh.proxyer.fake.command.v1.local.*;
+import com.mhxh.proxyer.fake.command.v1.remote.refuse.*;
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendCommandRuleConstants;
 import com.mhxh.proxyer.tcp.game.constants.MapConstants;

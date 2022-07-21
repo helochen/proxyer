@@ -1,6 +1,6 @@
 package com.mhxh.proxyer.tcp.server.local;
 
-import com.mhxh.proxyer.fake.command.base.IFormatCommand;
+import com.mhxh.proxyer.fake.command.v1.base.IFormatCommand;
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendCommandRuleConstants;
 import com.mhxh.proxyer.tcp.game.constants.GameCommandConstant;
@@ -75,9 +75,9 @@ public class MhxyLocalTcpProxyServer extends AbstractLocalTcpProxyServer {
                     @Override
                     public void channelActive(ChannelHandlerContext ctx) throws Exception {
                         // 构建链接游戏服务器的链接对象
-                        logger.info("服务器信息注册.{}", ctx.channel().id());
                         Channel clientToRemoteGameServer = MhxyGameServerProxyClient.createInstance(gameIp, gamePort, core, exchanger);
                         exchanger.register(ctx.channel(), clientToRemoteGameServer);
+                        logger.info("端口:{}服务器信息注册.{}->{}", getPort(), ctx.channel().id(), clientToRemoteGameServer.id());
                         super.channelActive(ctx);
                     }
 

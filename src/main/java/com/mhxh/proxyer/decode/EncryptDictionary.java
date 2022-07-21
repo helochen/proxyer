@@ -19,6 +19,8 @@ public class EncryptDictionary {
 
     public static Map<String, String> decodeMap = new ConcurrentHashMap<>();
 
+    public static Map<String, String> originalDecodeMap = new ConcurrentHashMap<>();
+
 
     private static final String[] encode = new String[]{
             "VP,", "Zu,", "Iv,", "yP,", "BZ,", "wd,", "5R,", "8v,", "Wa,", "q6,"
@@ -48,6 +50,7 @@ public class EncryptDictionary {
             encodeMap.put(ByteBufUtil.hexDump(encode[i].getBytes(Charset.forName("GBK"))), ByteBufUtil.hexDump(decode[i].getBytes(Charset.forName("GBK"))));
             decodeMap.put(ByteBufUtil.hexDump(decode[i].getBytes(Charset.forName("GBK"))), ByteBufUtil.hexDump(encode[i].getBytes(Charset.forName("GBK"))));
             originalEncodeMap.put(encode[i], decode[i]);
+            originalDecodeMap.put(decode[i], encode[i]);
         }
     }
 
@@ -64,5 +67,24 @@ public class EncryptDictionary {
             gbkCode = gbkCode.replaceAll(key, originalEncodeMap.get(key));
         }
         return gbkCode;
+    }
+
+
+    /**
+     * 将明文加密为字符
+     * @param plaintext
+     * @return
+     */
+    public static String encodeEncryptString(String plaintext) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < plaintext.length(); i++) {
+            char c = plaintext.charAt(i);
+            if (originalDecodeMap.containsKey(String.valueOf(c))) {
+                stringBuilder.append(originalDecodeMap.get(String.valueOf(c)));
+            } else {
+                stringBuilder.append(c);
+            }
+        }
+        return stringBuilder.toString();
     }
 }

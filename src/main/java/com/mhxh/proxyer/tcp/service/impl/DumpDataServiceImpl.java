@@ -57,18 +57,18 @@ public class DumpDataServiceImpl implements IDumpDataService {
     }
 
     @Override
-    public void outputEncryptHexStrAndFormatStr(ByteBuf buf, int source, int port) throws Exception {
+    public void outputEncryptHexStrAndFormatStr(ByteBuf buf, int source, int port) {
         try {
-            String hexDump = ByteBufUtil.hexDump(buf);
+            String originalHexDump = ByteBufUtil.hexDump(buf);
 
             String from = source == ByteDataExchanger.SERVER_OF_LOCAL ?
                     "本地数据" : "服务器数据";
-            hexDump = EncryptDictionary.DecodeEncryptString(hexDump);
+            String hexDump = EncryptDictionary.DecodeEncryptString(originalHexDump);
             byte[] bytes = ByteBufUtil.decodeHexDump(hexDump);
             String gbkHex = new String(bytes, Charset.forName("GBK"));
 
-            logger.info("\n{}:{}->\t发送16进制数据=>{},\n{}:{}->\t发送GBK解析数据=> {}",
-                    from, port, hexDump, from, port, gbkHex);
+            logger.info("\n{}:{}->\t发送原始16进制数据=>{},\t发送16进制数据=>{},\n{}:{}->\t发送GBK解析数据=> {}",
+                    from, port, originalHexDump, hexDump, from, port, gbkHex);
 
         } catch (Exception e) {
             logger.info("数据转换异常：源头：{} ,{}", source, e.getMessage());

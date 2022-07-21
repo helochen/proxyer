@@ -29,7 +29,9 @@ public class MyDataEncryptLoggerSimpleHandler extends SimpleChannelInboundHandle
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, ByteBuf buf) throws Exception {
         ByteBuf recordBuf = buf.retainedSlice();
         try {
-            exchanger.getDumpDataService().outputEncryptHexStrAndFormatStr(recordBuf, type, port);
+            exchanger.getTaskExecutor().execute(() -> {
+                exchanger.getDumpDataService().outputEncryptHexStrAndFormatStr(recordBuf, type, port);
+            });
         } catch (TaskRejectedException e) {
             logger.error("出现了奇怪的异常！！！！{}", e.getMessage());
         }
