@@ -1,10 +1,13 @@
 package com.mhxh.proxyer.web.service.impl;
 
+import com.mhxh.proxyer.fake.command.v2.local.LocalAgreeCatchGhostV2Command;
+import com.mhxh.proxyer.fake.command.v2.local.LocalAgreeMoneyTaskV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalChangeMapV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalSendWalkingPixelV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalSendWalkingV2Command;
+import com.mhxh.proxyer.fake.command.v2.local.LocalTalkToNpcV2Command;
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
-import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendV2CommandRuleConstants;
+import com.mhxh.proxyer.tcp.game.constants.TaskConstants;
 import com.mhxh.proxyer.web.service.IRegisterDirectCommandService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -36,15 +39,14 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
     public void gotoXY(int x, int y, String id) {
         final Channel channel = byteDataExchanger.queryChannelById(id);
         if (channel != null) {
-            long time = System.currentTimeMillis() / 1000;
 
             final LocalSendWalkingV2Command localSendWalkingV2Command = new LocalSendWalkingV2Command(x, y);
 
-            String hexRun = localSendWalkingV2Command.format(String.valueOf(time), null);
+            String hexRun = localSendWalkingV2Command.format();
             final byte[] bytesRun = ByteBufUtil.decodeHexDump(hexRun);
             final LocalSendWalkingPixelV2Command localSendWalkingPixelV2Command = new LocalSendWalkingPixelV2Command(x, y);
 
-            String hexRunPixel = localSendWalkingPixelV2Command.format(String.valueOf(time), null);
+            String hexRunPixel = localSendWalkingPixelV2Command.format();
 
             final byte[] bytesRunPixel = ByteBufUtil.decodeHexDump(hexRunPixel);
             logger.info("虚拟命令：{},{}", hexRun, hexRunPixel);
@@ -60,18 +62,88 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
     }
 
     @Override
-    public void changeMap(int dst, String id) {
+    public void takeMoney(int dst, String id) {
         final Channel channel = byteDataExchanger.queryChannelById(id);
         if (channel != null) {
             long time = System.currentTimeMillis() / 1000;
             LocalChangeMapV2Command command = new
-                    LocalChangeMapV2Command(LocalSendV2CommandRuleConstants.ROLE_CHANGE_MAP_DIRECT[dst]);
+                    LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[dst]);
+
             String hexRun = command.format(String.valueOf(time), null);
             logger.info("虚拟命令：{}", hexRun);
-            final byte[] bytesRunPixel = ByteBufUtil.decodeHexDump(hexRun);
-            final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(bytesRunPixel.length);
+            final byte[] changeMapBytes = ByteBufUtil.decodeHexDump(hexRun);
+
+            byte[] getTask = null;
+            if (dst == 0) {
+                LocalAgreeMoneyTaskV2Command money = new LocalAgreeMoneyTaskV2Command();
+                String hexTask = money.format(String.valueOf(time), null);
+                getTask = ByteBufUtil.decodeHexDump(hexTask);
+
+            }
+
+            final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(changeMapBytes.length +
+                    (getTask == null ? 0 : getTask.length));
             try {
-                buffer.writeBytes(bytesRunPixel);
+                buffer.writeBytes(changeMapBytes);
+                if (getTask != null) {
+                    buffer.writeBytes(getTask);
+                }
+                channel.writeAndFlush(buffer.retain());
+            } finally {
+                ReferenceCountUtil.release(buffer);
+            }
+            if (dst != 0) {
+                try {
+                    Thread.sleep(300);
+                    // 移动
+                    if (dst == 2 || dst == 9 || dst == 10 || dst == 11 || dst == 12) {
+                        if (TaskConstants.MOVE_MAP_POS.containsKey(dst)) {
+                            Integer[] pos = TaskConstants.MOVE_MAP_POS.get(dst);
+                            this.gotoXY(pos[0], pos[1], id);
+                        }
+                    }
+                    // 与 NPC聊天
+                    if (TaskConstants.NPC_TALK_MAP.containsKey(dst)) {
+                        Integer[] info = TaskConstants.NPC_TALK_MAP.get(dst);
+                        if (info.length >= 3) {
+                            Thread.sleep(300);
+                            this.talkToNpc(info[0], info[1], info[2], id);
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void catchGhost(String id) {
+        final Channel channel = byteDataExchanger.queryChannelById(id);
+        if (channel != null) {
+            long time = System.currentTimeMillis() / 1000;
+            LocalAgreeCatchGhostV2Command agree = new LocalAgreeCatchGhostV2Command();
+            String hexAgree = agree.format(String.valueOf(time), null);
+            final byte[] bytesAgree = ByteBufUtil.decodeHexDump(hexAgree);
+            final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(bytesAgree.length);
+            try {
+                buffer.writeBytes(bytesAgree);
+                channel.writeAndFlush(buffer.retain());
+            } finally {
+                ReferenceCountUtil.release(buffer);
+            }
+        }
+    }
+
+    private void talkToNpc(int mapId, int no, int idx, String id) {
+        final Channel channel = byteDataExchanger.queryChannelById(id);
+        if (channel != null) {
+            LocalTalkToNpcV2Command talk = new LocalTalkToNpcV2Command(mapId, no, idx);
+            String hexTask = talk.format();
+            byte[] getTask = ByteBufUtil.decodeHexDump(hexTask);
+            final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(getTask.length);
+            try {
+                buffer.writeBytes(getTask);
                 channel.writeAndFlush(buffer.retain());
             } finally {
                 ReferenceCountUtil.release(buffer);

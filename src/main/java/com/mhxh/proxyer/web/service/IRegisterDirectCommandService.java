@@ -12,5 +12,7 @@ public interface IRegisterDirectCommandService {
 
     void gotoXY(int x, int y, String id);
 
-    void changeMap(int dst, String id);
+    void takeMoney(int dst, String id);
+
+    void catchGhost(String id);
 }

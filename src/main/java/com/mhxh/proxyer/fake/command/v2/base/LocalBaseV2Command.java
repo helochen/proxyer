@@ -37,5 +37,10 @@ public abstract class LocalBaseV2Command extends LocalBaseCommand {
         return Integer.toHexString(gbkBytes.length + 4) + this.header + Integer.toHexString(gbkBytes.length) + gbk;
     }
 
+    @Override
+    public String format() {
+        return this.format(String.valueOf(System.currentTimeMillis() / 1000), null);
+    }
+
     protected abstract String innerFormat(String time);
 }
