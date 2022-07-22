@@ -40,7 +40,7 @@ public class TaskConstants {
 
     static {
         NPC_TALK_MAP.put(1, new Integer[]{1054, 1, 1});
-        NPC_TALK_MAP.put(2, new Integer[]{1143, 1, 1});
+        NPC_TALK_MAP.put(2, new Integer[]{1043, 1, 1});
         NPC_TALK_MAP.put(3, new Integer[]{1124, 1, 1});
         NPC_TALK_MAP.put(4, new Integer[]{1147, 1, 1});
         NPC_TALK_MAP.put(5, new Integer[]{1143, 1, 1});
