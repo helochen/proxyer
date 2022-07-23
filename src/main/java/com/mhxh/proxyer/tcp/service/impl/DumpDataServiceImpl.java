@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.Charset;
-import java.util.Map;
 import java.util.regex.Matcher;
 
 @Service
@@ -66,7 +65,11 @@ public class DumpDataServiceImpl implements IDumpDataService {
             String hexDump = EncryptDictionary.DecodeEncryptString(originalHexDump);
             byte[] bytes = ByteBufUtil.decodeHexDump(hexDump);
             String gbkHex = new String(bytes, Charset.forName("GBK"));
-
+            // 处理抓鬼数据
+            ITaskBean taskBean = this.createTaskBeanByReturnDataV2(gbkHex);
+            if (null != taskBean) {
+                taskDataManager.registerTaskBeanV2(taskBean);
+            }
             logger.info("\n{}:{}->\t发送原始16进制数据=>{},\t发送16进制数据=>{},\n{}:{}->\t发送GBK解析数据=> {}",
                     from, port, originalHexDump, hexDump, from, port, gbkHex);
 
@@ -75,6 +78,66 @@ public class DumpDataServiceImpl implements IDumpDataService {
         } finally {
             ReferenceCountUtil.release(buf);
         }
+    }
+
+
+    private ITaskBean createTaskBeanByReturnDataV2(String gbk) {
+            ITaskBean taskBean = null;
+        if (gbk.contains(TaskConstants.TASK_JIANG_HU) || gbk.contains(TaskConstants.TASK_CATCH_GHOST)) {
+            Matcher tasksFind = DataSplitConstant.DATA_PATTERN.matcher(gbk);
+            while (tasksFind.find()) {
+                String taskContent = tasksFind.group();
+                if (taskContent.contains(TaskConstants.TASK_CATCH_GHOST) || taskContent.contains(TaskConstants.TASK_JIANG_HU)) {
+                    taskBean = TaskBeanCreateFactory.createTaskBean(TaskConstants.TASK_CATCH_GHOST, taskContent);
+                    // 地图位置，地图坐标
+                    Matcher p = DataSplitConstant.TASK_DECOMPOSITION_POSTION.matcher(taskContent);
+                    if (p.find()) {
+                        String position = p.group();
+                        int i = position.indexOf("(");
+                        if (i >= 0) {
+                            String city = position.substring(0, i);
+                            String x_y = position.replace(city, "").replace("(", "").replace(")", "");
+
+                            try {
+                                String[] xy = x_y.split(",");
+                                int x = Integer.parseInt(xy[0]);
+                                int y = Integer.parseInt(xy[1]);
+                                taskBean.initNpcXY(x, y);
+                            } catch (Exception e) {
+                                logger.error("异常：数据转换失败：{}", e.getMessage());
+                            }
+                            taskBean.initNpcTargetMapName(city);
+                        }
+                    }
+                    Matcher taskNpcNameMatcher = DataSplitConstant.TASK_DECOMPOSITION_NAME.matcher(taskContent);
+                    if (taskNpcNameMatcher.find()) {
+                        String npcName = taskNpcNameMatcher.group();
+                        taskBean.initNpcName(npcName);
+
+                        logger.info("任务注册：{}->{}", taskBean.getMapName(), npcName);
+                    }
+                } else {
+                    logger.info("未知的任务：{}", taskContent);
+                }
+            }
+        } else {
+            // 这个是去地图查找所有的NPC地址信息
+            Matcher detailNpc = DataSplitConstant.MAP_NPC_TARGET_NPC_PATTERN.matcher(gbk);
+            logger.info("地图查找所有的NPC地址信息：{}", gbk);
+            while (detailNpc.find()) {
+                String npcDetail = detailNpc.group();
+
+                if (taskDataManager.complementTaskV2(npcDetail)) {
+                    // 补充完成一个任务就可以了
+                    logger.info("补充任务注册信息：{}", npcDetail);
+                    break;
+                } else {
+                    logger.info("地图怪物信息：{}", npcDetail);
+                    taskDataManager.registerNpcPosition(npcDetail);
+                }
+            }
+        }
+        return taskBean;
     }
 
 

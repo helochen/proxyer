@@ -39,6 +39,12 @@ public abstract class AbstractTaskBean implements ITaskBean {
      */
     private String id;
 
+    /**
+     * 编号
+     */
+    private String no;
+
+
     @Override
     public void initNpcName(String npc) {
         this.npcName = npc;
@@ -102,6 +108,17 @@ public abstract class AbstractTaskBean implements ITaskBean {
     @Override
     public String getSerialNo() {
         return serialNo;
+    }
+
+    @Override
+    public ITaskBean setNo(String no) {
+        this.no = no;
+        return this;
+    }
+
+    @Override
+    public String getNo() {
+        return no;
     }
 
     @Override

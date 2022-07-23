@@ -4,6 +4,7 @@ import com.mhxh.proxyer.decode.EncryptDictionary;
 import com.mhxh.proxyer.fake.command.v1.base.LocalBaseCommand;
 import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendV2CommandRuleConstants;
 import io.netty.buffer.ByteBufUtil;
+import lombok.Getter;
 
 import java.nio.charset.Charset;
 
@@ -16,6 +17,7 @@ import java.nio.charset.Charset;
  **/
 public abstract class LocalBaseV2Command extends LocalBaseCommand {
 
+    @Getter
     private final String header;
 
     public LocalBaseV2Command(String pattern) {

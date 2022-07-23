@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>抓鬼</title>
+    <script src="http://libs.baidu.com/jquery/1.4.0/jquery.min.js" type="text/javascript"></script>
+    <
+    <script type="text/javascript">
+        function send2Server(dst, id) {
+            $.get("/v2/change-map?dst=" + dst + "&id=" + document.getElementById("id").value, function (result) {
+                console.log(result);
+            });
+        }
+
+        function takeTask(id) {
+            $.get("/v2/catch-ghost?id=" + document.getElementById("id").value, function (result) {
+                console.log(result);
+            });
+        }
+
+        function fight(){
+            $.get("/v2/fight-ghost?id=" + document.getElementById("id").value, function (result) {
+                console.log(result);
+            });
+        }
+    </script>
+</head>
+<body>
+</br>
+<input type="text" id="id">
+</br>
+<button type="button" onclick="send2Server(13);">去地府</button>
+</br>
+<button type="button" onclick="takeTask();">领任务</button>
+</br>
+<button type="button" onclick="send2Server(14);">普陀山</button>
+</br>
+<button type="button" onclick="send2Server(15);">五庄观</button>
+</br>
+<button type="button" onclick="send2Server(17);">长寿村</button>
+</br>
+<button type="button" onclick="send2Server(18);">傲来国</button>
+</br>
+<button type="button" onclick="send2Server(19);">女儿村</button>
+</br>
+<button type="button" onclick="send2Server(21);">建邺城</button>
+</br>
+<button type="button" onclick="send2Server(24);">朱紫国</button>
+</br>
+<button type="button" onclick="send2Server(20);">江南野外</button>
+</br>
+<button type="button" onclick="send2Server(16);">大唐境外</button>
+</br>
+<button type="button" onclick="send2Server(23);">大唐国境</button>
+</br>
+</br>
+</br>
+</br>
+</br>
+<button type="button" onclick="fight();">战斗</button>
+</body>
+</html>

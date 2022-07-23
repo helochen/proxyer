@@ -29,7 +29,7 @@ public class LocalCommandV2QueueController {
 
     @GetMapping("change-map")
     public String changeMap(@RequestParam("dst") int dst, @RequestParam("id") String id) {
-        directCommandService.takeMoney(dst , id);
+        directCommandService.takeMoney(dst, id);
         return "success";
     }
 
@@ -37,5 +37,10 @@ public class LocalCommandV2QueueController {
     public String catchGhost(@RequestParam("id") String id) {
         directCommandService.catchGhost(id);
         return "success";
+    }
+
+    @GetMapping("fight-ghost")
+    public String fightGhost(@RequestParam("id") String id) {
+        return directCommandService.fightGhost(id);
     }
 }

@@ -21,6 +21,10 @@ public interface ITaskBean {
 
     ITaskBean setId(String id);
 
+    ITaskBean setNo(String no);
+
+    String getNo();
+
     String getMapName();
 
     String getMapId();

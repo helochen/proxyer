@@ -5,6 +5,7 @@ import com.mhxh.proxyer.tcp.game.constants.DataSplitConstant;
 import com.mhxh.proxyer.tcp.game.constants.TaskConstants;
 import com.mhxh.proxyer.tcp.game.task.ITaskBean;
 import com.mhxh.proxyer.web.patch.CatchGhostTaskPatch;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,33 @@ public class TaskDataManager {
     /**
      * 当前任务（抓鬼、初出江湖等）的对象管理器
      */
+    @Getter
     private final Queue<ITaskBean> roleTasks = new ConcurrentLinkedDeque<>();
 
+    /**
+     * 注册抓鬼任务到队列中
+     */
+    public void registerTaskBeanV2(ITaskBean taskBean) {
+        Iterator<ITaskBean> iterator = roleTasks.iterator();
+        synchronized (TaskDataManager.class) {
+            while (iterator.hasNext()) {
+                ITaskBean next = iterator.next();
+                if (next.equals(taskBean)) {
+                    logger.info("任务注册：重复得抓鬼任务{}", taskBean.getNpcName());
+                    return;
+                }
+            }
+        }
+        // 产生任务对象
+        switch (taskBean.getTaskType()) {
+            case 2:
+                roleTasks.offer(taskBean);
+                logger.info("抓鬼DEBUG信息：新增抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), taskBean.getMapName(), taskBean.getNpcName());
+                break;
+            default:
+                break;
+        }
+    }
 
     /**
      * 注入手头任务信息
@@ -76,6 +102,37 @@ public class TaskDataManager {
         }
     }
 
+    /**
+     * 任务信息填充V2
+     */
+    public boolean complementTaskV2(String npcDetail) {
+        Iterator<ITaskBean> iterator = roleTasks.iterator();
+
+        while (iterator.hasNext()) {
+            ITaskBean next = iterator.next();
+            if (npcDetail.contains(next.getNpcName())) {
+                npcDetail = npcDetail.substring(3, npcDetail.length() - 8);
+                try {
+                    Map<String, String> holder = Splitter.on(",").trimResults().withKeyValueSeparator("=").split(npcDetail.replaceAll("\\{", "").replaceAll("}", ""));
+                    String mapId = holder.getOrDefault("地图", "");
+                    String id = holder.getOrDefault("id", "");
+                    String serialNo = holder.getOrDefault("编号", "");
+                    int x = Integer.parseInt(holder.getOrDefault("x", "10"));
+                    int y = Integer.parseInt(holder.getOrDefault("y", "10"));
+                    String no = holder.getOrDefault("序号", "");
+                    //String name = holder.getOrDefault("名称", "");
+
+                    next.initNpcXY(x, y).setSerialNo(serialNo)
+                            .setId(id).setMapId(mapId).setNo(no);
+                    logger.info("补充信息：{}", next);
+                    return true;
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * 把任务信息进行填充

@@ -54,4 +54,11 @@ public class LocalSendV2CommandRuleConstants {
 
     // 与NPC对话
     public static final String ROLE_TALK_TO_NPC_GBK_V2 = "1501*-*do local ret={[\"地图\"]=%s,[\"编号\"]=%s,[\"序列\"]=%s} return ret end*-*%s";
+
+
+    // 请求抓鬼任务
+    public static final String ROLE_REQUEST_CATCH_GHOST_GBK_V2 = "1501*-*do local ret={[\"地图\"]=%s,[\"编号\"]=%s,[\"标识\"]=%s,[\"序列\"]=%s} return ret end*-*%s";
+
+    // 杀鬼
+    public static final String ROLE_FIGHT_WITH_GHOST_GBK_V2 = "1502*-*do local ret={[1]=\"回你的地狱去\",[2]=%s,[3]=\"%s\"} return ret end*-*%s";
 }

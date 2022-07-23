@@ -15,4 +15,6 @@ public interface IRegisterDirectCommandService {
     void takeMoney(int dst, String id);
 
     void catchGhost(String id);
+
+    String fightGhost(String id);
 }

@@ -3,11 +3,15 @@ package com.mhxh.proxyer.web.service.impl;
 import com.mhxh.proxyer.fake.command.v2.local.LocalAgreeCatchGhostV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalAgreeMoneyTaskV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalChangeMapV2Command;
+import com.mhxh.proxyer.fake.command.v2.local.LocalKillGhostTaskV2Command;
+import com.mhxh.proxyer.fake.command.v2.local.LocalRequestCatchGhostV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalSendWalkingPixelV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalSendWalkingV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalTalkToNpcV2Command;
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
+import com.mhxh.proxyer.tcp.exchange.TaskDataManager;
 import com.mhxh.proxyer.tcp.game.constants.TaskConstants;
+import com.mhxh.proxyer.tcp.game.task.ITaskBean;
 import com.mhxh.proxyer.web.service.IRegisterDirectCommandService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -18,6 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.Queue;
 
 /**
  * file description:
@@ -34,6 +41,8 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
     @Autowired
     private ByteDataExchanger byteDataExchanger;
 
+    @Autowired
+    private TaskDataManager taskDataManager;
 
     @Override
     public void gotoXY(int x, int y, String id) {
@@ -133,6 +142,53 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
                 ReferenceCountUtil.release(buffer);
             }
         }
+    }
+
+    @Override
+    public String fightGhost(String id) {
+        final Channel channel = byteDataExchanger.queryChannelById(id);
+        if (channel != null) {
+            try {
+                final Queue<ITaskBean> roleTasks = taskDataManager.getRoleTasks();
+                final ITaskBean poll = roleTasks.poll();
+                if (StringUtils.hasText(poll.getId())) {
+                    // 直接发送干鬼的消息
+                    this.gotoXY(poll.getX(), poll.getY(), id);
+                    Thread.sleep(200);
+                    LocalRequestCatchGhostV2Command request = new
+                            LocalRequestCatchGhostV2Command(poll.getMapId(), poll.getSerialNo(),
+                            poll.getId(), poll.getSerialNo());
+                    final String requsetStr = request.format();
+                    byte[] getTaskRequest = ByteBufUtil.decodeHexDump(requsetStr);
+                    final ByteBuf bufferRequest = ByteBufAllocator.DEFAULT.buffer(getTaskRequest.length);
+                    try {
+                        bufferRequest.writeBytes(getTaskRequest);
+                        channel.writeAndFlush(bufferRequest.retain());
+                    } finally {
+                        ReferenceCountUtil.release(bufferRequest);
+                    }
+                    logger.info("虚拟命令：{}", requsetStr);
+                    Thread.sleep(200);
+
+                    LocalKillGhostTaskV2Command kill = new LocalKillGhostTaskV2Command(poll.getMapId(), poll.getNpcName());
+                    final String format = kill.format();
+                    byte[] getTask = ByteBufUtil.decodeHexDump(format);
+                    final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(getTask.length);
+                    try {
+                        buffer.writeBytes(getTask);
+                        channel.writeAndFlush(buffer.retain());
+                    } finally {
+                        ReferenceCountUtil.release(buffer);
+                    }
+                    logger.info("虚拟命令：{}", format);
+
+                    return "success";
+                }
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+        }
+        return "fail";
     }
 
     private void talkToNpc(int mapId, int no, int idx, String id) {
