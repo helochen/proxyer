@@ -61,4 +61,12 @@ public class LocalSendV2CommandRuleConstants {
 
     // 杀鬼
     public static final String ROLE_FIGHT_WITH_GHOST_GBK_V2 = "1502*-*do local ret={[1]=\"回你的地狱去\",[2]=%s,[3]=\"%s\"} return ret end*-*%s";
+
+    // 抓鬼的奇怪头信息
+    public static final String[][] ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER = new String[][]{
+            new String[]{"0e","0a"},
+            new String[]{"11","0d"},
+            new String[]{"0b","07"},
+            new String[]{"08","04"}
+    };
 }

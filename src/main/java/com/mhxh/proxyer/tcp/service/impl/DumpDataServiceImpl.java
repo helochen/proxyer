@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.nio.charset.Charset;
 import java.util.regex.Matcher;
@@ -82,7 +83,7 @@ public class DumpDataServiceImpl implements IDumpDataService {
 
 
     private ITaskBean createTaskBeanByReturnDataV2(String gbk) {
-            ITaskBean taskBean = null;
+        ITaskBean taskBean = null;
         if (gbk.contains(TaskConstants.TASK_JIANG_HU) || gbk.contains(TaskConstants.TASK_CATCH_GHOST)) {
             Matcher tasksFind = DataSplitConstant.DATA_PATTERN.matcher(gbk);
             while (tasksFind.find()) {
@@ -96,17 +97,20 @@ public class DumpDataServiceImpl implements IDumpDataService {
                         int i = position.indexOf("(");
                         if (i >= 0) {
                             String city = position.substring(0, i);
-                            String x_y = position.replace(city, "").replace("(", "").replace(")", "");
-
-                            try {
-                                String[] xy = x_y.split(",");
-                                int x = Integer.parseInt(xy[0]);
-                                int y = Integer.parseInt(xy[1]);
-                                taskBean.initNpcXY(x, y);
-                            } catch (Exception e) {
-                                logger.error("异常：数据转换失败：{}", e.getMessage());
+                            if (StringUtils.hasText(city)) {
+                                String x_y = position.replace(city, "").replace("(", "").replace(")", "");
+                                try {
+                                    String[] xy = x_y.split(",");
+                                    int x = Integer.parseInt(xy[0]);
+                                    int y = Integer.parseInt(xy[1]);
+                                    taskBean.initNpcXY(x, y);
+                                } catch (Exception e) {
+                                    logger.error("异常：数据转换失败：{}", e.getMessage());
+                                }
+                                taskBean.initNpcTargetMapName(city);
+                            } else {
+                                logger.info("奇怪的注册数据：{}", gbk);
                             }
-                            taskBean.initNpcTargetMapName(city);
                         }
                     }
                     Matcher taskNpcNameMatcher = DataSplitConstant.TASK_DECOMPOSITION_NAME.matcher(taskContent);
@@ -123,10 +127,9 @@ public class DumpDataServiceImpl implements IDumpDataService {
         } else {
             // 这个是去地图查找所有的NPC地址信息
             Matcher detailNpc = DataSplitConstant.MAP_NPC_TARGET_NPC_PATTERN.matcher(gbk);
-            logger.info("地图查找所有的NPC地址信息：{}", gbk);
             while (detailNpc.find()) {
                 String npcDetail = detailNpc.group();
-
+                logger.info("处理具体内容：{}", gbk);
                 if (taskDataManager.complementTaskV2(npcDetail)) {
                     // 补充完成一个任务就可以了
                     logger.info("补充任务注册信息：{}", npcDetail);

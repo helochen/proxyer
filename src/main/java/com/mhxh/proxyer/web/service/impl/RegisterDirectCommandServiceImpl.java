@@ -4,12 +4,14 @@ import com.mhxh.proxyer.fake.command.v2.local.LocalAgreeCatchGhostV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalAgreeMoneyTaskV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalChangeMapV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalKillGhostTaskV2Command;
+import com.mhxh.proxyer.fake.command.v2.local.LocalQueryTaskV2Commend;
 import com.mhxh.proxyer.fake.command.v2.local.LocalRequestCatchGhostV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalSendWalkingPixelV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalSendWalkingV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalTalkToNpcV2Command;
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.exchange.TaskDataManager;
+import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendV2CommandRuleConstants;
 import com.mhxh.proxyer.tcp.game.constants.TaskConstants;
 import com.mhxh.proxyer.tcp.game.task.ITaskBean;
 import com.mhxh.proxyer.web.service.IRegisterDirectCommandService;
@@ -141,6 +143,12 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
             } finally {
                 ReferenceCountUtil.release(buffer);
             }
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            this.queryTaskList(id);
         }
     }
 
@@ -151,13 +159,43 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
             try {
                 final Queue<ITaskBean> roleTasks = taskDataManager.getRoleTasks();
                 final ITaskBean poll = roleTasks.poll();
-                if (StringUtils.hasText(poll.getId())) {
+                if (poll != null && StringUtils.hasText(poll.getId())) {
                     // 直接发送干鬼的消息
                     this.gotoXY(poll.getX(), poll.getY(), id);
                     Thread.sleep(200);
-                    LocalRequestCatchGhostV2Command request = new
-                            LocalRequestCatchGhostV2Command(poll.getMapId(), poll.getSerialNo(),
-                            poll.getId(), poll.getSerialNo());
+                    LocalRequestCatchGhostV2Command request;
+                    logger.info("请求抓鬼数据：{},{},{},{}", poll.getNpcName(), poll.getMapId(), poll.getId(), poll.getId().length());
+                    if (poll.getId().length() == 28) {
+                        request = new
+                                LocalRequestCatchGhostV2Command(poll.getMapId(), poll.getSerialNo(),
+                                poll.getId(), poll.getSerialNo(),
+                                LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[1][0],
+                                LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[1][1]);
+                    } else if (poll.getId().length() == 27) {
+                        request = new
+                                LocalRequestCatchGhostV2Command(poll.getMapId(), poll.getSerialNo(),
+                                poll.getId(), poll.getSerialNo(),
+                                LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[0][0],
+                                LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[0][1]);
+                    } else if (poll.getId().length() == 26) {
+                        request = new
+                                LocalRequestCatchGhostV2Command(poll.getMapId(), poll.getSerialNo(),
+                                poll.getId(), poll.getSerialNo(),
+                                LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[2][0],
+                                LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[2][1]);
+                    } else if(poll.getId().length() == 25) {
+                        request = new
+                                LocalRequestCatchGhostV2Command(poll.getMapId(), poll.getSerialNo(),
+                                poll.getId(), poll.getSerialNo(),
+                                LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[3][0],
+                                LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[3][1]);
+                    }
+                    else {
+                        logger.info("抓鬼数据异常：{}", poll.getNpcName());
+                        return "error name";
+                    }
+
+
                     final String requsetStr = request.format();
                     byte[] getTaskRequest = ByteBufUtil.decodeHexDump(requsetStr);
                     final ByteBuf bufferRequest = ByteBufAllocator.DEFAULT.buffer(getTaskRequest.length);
@@ -183,6 +221,10 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
                     logger.info("虚拟命令：{}", format);
 
                     return "success";
+                } else {
+                    // 移除空抓鬼任务
+                    assert poll != null;
+                    logger.info("抓鬼任务失败：{},{},{}", poll.getNpcName(), poll.getMapName(), poll.getSerialNo());
                 }
             } catch (Exception e) {
                 logger.error(e.getMessage());
@@ -204,6 +246,23 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
             } finally {
                 ReferenceCountUtil.release(buffer);
             }
+        }
+    }
+
+    private void queryTaskList(String id) {
+        final Channel channel = byteDataExchanger.queryChannelById(id);
+        if (null != channel) {
+            LocalQueryTaskV2Commend queryTaskV2Commend = new LocalQueryTaskV2Commend();
+            String hexTask = queryTaskV2Commend.format();
+            byte[] getTask = ByteBufUtil.decodeHexDump(hexTask);
+            final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(getTask.length);
+            try {
+                buffer.writeBytes(getTask);
+                channel.writeAndFlush(buffer.retain());
+            } finally {
+                ReferenceCountUtil.release(buffer);
+            }
+
         }
     }
 }

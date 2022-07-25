@@ -1,7 +1,6 @@
 package com.mhxh.proxyer.fake.command.v2.local;
 
 import com.mhxh.proxyer.fake.command.v2.base.LocalBaseNoLengthV2Command;
-import com.mhxh.proxyer.fake.command.v2.base.LocalBaseV2Command;
 import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendV2CommandRuleConstants;
 
 /**
@@ -18,8 +17,8 @@ public class LocalRequestCatchGhostV2Command extends LocalBaseNoLengthV2Command 
     private final String id;
     private final String idx;
 
-    public LocalRequestCatchGhostV2Command(String mapId, String no, String id, String idx) {
-        super("11" + LocalSendV2CommandRuleConstants.COMMEND_PROTO_GET_HEADER + "0d",
+    public LocalRequestCatchGhostV2Command(String mapId, String no, String id, String idx, String startHeader, String endHeader) {
+        super(startHeader, endHeader, LocalSendV2CommandRuleConstants.COMMEND_PROTO_GET_HEADER,
                 LocalSendV2CommandRuleConstants.ROLE_REQUEST_CATCH_GHOST_GBK_V2);
         this.mapId = mapId;
         this.no = no;

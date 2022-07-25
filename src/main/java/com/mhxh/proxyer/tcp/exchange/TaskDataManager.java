@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -106,28 +107,29 @@ public class TaskDataManager {
      * 任务信息填充V2
      */
     public boolean complementTaskV2(String npcDetail) {
-        Iterator<ITaskBean> iterator = roleTasks.iterator();
+        if (npcDetail.contains("事件=\"单位\"")) {
+            Iterator<ITaskBean> iterator = roleTasks.iterator();
+            while (iterator.hasNext()) {
+                ITaskBean next = iterator.next();
+                if (StringUtils.hasText(next.getNpcName()) && npcDetail.contains(next.getNpcName())) {
+                    npcDetail = npcDetail.substring(3, npcDetail.length() - 8);
+                    try {
+                        Map<String, String> holder = Splitter.on(",").trimResults().withKeyValueSeparator("=").split(npcDetail.replaceAll("\\{", "").replaceAll("}", ""));
+                        String mapId = holder.getOrDefault("地图", "");
+                        String id = holder.getOrDefault("id", "");
+                        String serialNo = holder.getOrDefault("编号", "");
+                        int x = Integer.parseInt(holder.getOrDefault("x", "10"));
+                        int y = Integer.parseInt(holder.getOrDefault("y", "10"));
+                        String no = holder.getOrDefault("序号", "");
+                        //String name = holder.getOrDefault("名称", "");
 
-        while (iterator.hasNext()) {
-            ITaskBean next = iterator.next();
-            if (npcDetail.contains(next.getNpcName())) {
-                npcDetail = npcDetail.substring(3, npcDetail.length() - 8);
-                try {
-                    Map<String, String> holder = Splitter.on(",").trimResults().withKeyValueSeparator("=").split(npcDetail.replaceAll("\\{", "").replaceAll("}", ""));
-                    String mapId = holder.getOrDefault("地图", "");
-                    String id = holder.getOrDefault("id", "");
-                    String serialNo = holder.getOrDefault("编号", "");
-                    int x = Integer.parseInt(holder.getOrDefault("x", "10"));
-                    int y = Integer.parseInt(holder.getOrDefault("y", "10"));
-                    String no = holder.getOrDefault("序号", "");
-                    //String name = holder.getOrDefault("名称", "");
-
-                    next.initNpcXY(x, y).setSerialNo(serialNo)
-                            .setId(id).setMapId(mapId).setNo(no);
-                    logger.info("补充信息：{}", next);
-                    return true;
-                } catch (Exception e) {
-                    logger.error(e.getMessage());
+                        next.initNpcXY(x, y).setSerialNo(serialNo)
+                                .setId(id).setMapId(mapId).setNo(no);
+                        logger.info("补充信息：{}", next);
+                        return true;
+                    } catch (Exception e) {
+                        logger.error(e.getMessage());
+                    }
                 }
             }
         }

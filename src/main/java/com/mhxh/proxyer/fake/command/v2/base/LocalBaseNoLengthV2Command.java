@@ -18,8 +18,8 @@ public abstract class LocalBaseNoLengthV2Command extends LocalBaseV2Command {
         super(pattern);
     }
 
-    public LocalBaseNoLengthV2Command(String header, String pattern) {
-        super(header, pattern);
+    public LocalBaseNoLengthV2Command(String beginHeader, String endHeader, String header, String pattern) {
+        super(beginHeader + header + endHeader, pattern);
     }
 
     @Override
