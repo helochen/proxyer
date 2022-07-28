@@ -1,6 +1,7 @@
 package com.mhxh.proxyer.tcp.exchange;
 
 import com.mhxh.proxyer.fake.FakeCommandRegisterFactory;
+import com.mhxh.proxyer.fake.FakeCommandV2RegisterManager;
 import com.mhxh.proxyer.fake.command.v1.base.IFormatCommand;
 import com.mhxh.proxyer.fake.command.v1.local.BuyFlyTicketItemCommand;
 import com.mhxh.proxyer.fake.command.v1.local.BuySystemItemCommand;
@@ -85,6 +86,9 @@ public class ByteDataExchanger {
     @Autowired
     @Getter
     private IDumpDataService dumpDataService;
+
+    @Autowired
+    private FakeCommandV2RegisterManager fakeCommandV2RegisterManager;
 
     /**
      * 模拟命令功能相关参数
@@ -378,5 +382,15 @@ public class ByteDataExchanger {
 
     public Channel queryChannelById(String id) {
         return pickChannel.get(id);
+    }
+
+
+    public boolean requestFakeCommand(Channel remoteChannel) {
+        final String id = repickCodeChannel.get(remoteChannel);
+        if (StringUtils.hasText(id) && id.equals(fakeCommandV2RegisterManager.getLeaderId())) {
+            fakeCommandV2RegisterManager.sendDirectCommand(id, remoteChannel);
+            return true;
+        }
+        return false;
     }
 }

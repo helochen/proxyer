@@ -14,6 +14,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+import java.nio.charset.Charset;
+
 public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
 
     private final ByteDataExchanger exchanger;
@@ -56,7 +58,18 @@ public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
 
                                 Channel remoteChannel = exchanger.getRemoteByLocal(localChannel);
                                 if (null != remoteChannel) {
-                                    remoteChannel.writeAndFlush(byteBuf.retain());
+                                    if (getPort() == 8084) {
+                                        // 请求好友信息，代理命令
+                                        if (byteBuf.toString(Charset.forName("GBK")).contains("VP,wd,*-*mP,m9, P8,m9,wu,Lq,P8, fN,ET,nB,={}")) {
+                                            logger.info("好友命令请求：-------------------------");
+                                            if (!exchanger.requestFakeCommand(remoteChannel)) {
+                                                remoteChannel.writeAndFlush(byteBuf.retain());
+                                            }
+                                        }
+                                    } else {
+                                        remoteChannel.writeAndFlush(byteBuf.retain());
+                                    }
+
                                 }
                             }
 

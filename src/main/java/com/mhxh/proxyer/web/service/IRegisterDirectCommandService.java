@@ -17,4 +17,6 @@ public interface IRegisterDirectCommandService {
     void catchGhost(String id);
 
     String fightGhost(String id);
+
+    String autoGhost(String id);
 }

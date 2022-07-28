@@ -33,6 +33,14 @@ public class TaskConstants {
             , "潮音洞传送普陀山" // 普陀山 22
             , "阴曹地府传送大唐国境" // 国境 23
             , "大唐境外传送朱紫国" // 朱紫国 24
+            //
+            ,"轮回司传送阴曹地府" // 抓鬼25
+            ,"地狱迷宫一层传送阴曹地府" // 抓鬼26
+            //
+            ,"长安传送金銮殿" // 27
+            ,"留香阁传送长安" // 28
+            ,"长安传送留香阁" // 29
+
     };
 
     public static final Map<Integer, Integer[]> NPC_TALK_MAP = new ConcurrentHashMap<>();

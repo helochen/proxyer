@@ -6,7 +6,13 @@ import com.mhxh.proxyer.tcp.netty.AbstractLinkGameServerClient;
 import com.mhxh.proxyer.tcp.server.handler.MyDataEncryptLoggerSimpleHandler;
 import com.mhxh.proxyer.tcp.server.handler.MyEncryptDelimiterBasedFrameDecorder;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.SimpleChannelInboundHandler;
 
 // 代理远程服务器
 public class MhxyV2GameRemoteServerProxyClient extends AbstractLinkGameServerClient {
@@ -34,11 +40,6 @@ public class MhxyV2GameRemoteServerProxyClient extends AbstractLinkGameServerCli
                         .addLast(new SimpleChannelInboundHandler<ByteBuf>() {
                             @Override
                             protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) throws Exception {
-                                if (getPort() == 8084) {
-                                    if (exchanger.filterServerCommand(byteBuf)) {
-                                        return;
-                                    }
-                                }
                                 Channel local = exchanger.getLocalByRemote(ctx.channel());
                                 if (null != local) {
                                     local.writeAndFlush(byteBuf.retain());

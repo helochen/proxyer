@@ -1,5 +1,6 @@
 package com.mhxh.proxyer.web.service.impl;
 
+import com.mhxh.proxyer.fake.FakeCommandV2RegisterManager;
 import com.mhxh.proxyer.fake.command.v2.local.LocalAgreeCatchGhostV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalAgreeMoneyTaskV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalChangeMapV2Command;
@@ -45,6 +46,9 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
 
     @Autowired
     private TaskDataManager taskDataManager;
+
+    @Autowired
+    private FakeCommandV2RegisterManager registerManager;
 
     @Override
     public void gotoXY(int x, int y, String id) {
@@ -183,14 +187,13 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
                                 poll.getId(), poll.getSerialNo(),
                                 LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[2][0],
                                 LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[2][1]);
-                    } else if(poll.getId().length() == 25) {
+                    } else if (poll.getId().length() == 25) {
                         request = new
                                 LocalRequestCatchGhostV2Command(poll.getMapId(), poll.getSerialNo(),
                                 poll.getId(), poll.getSerialNo(),
                                 LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[3][0],
                                 LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[3][1]);
-                    }
-                    else {
+                    } else {
                         logger.info("抓鬼数据异常：{}", poll.getNpcName());
                         return "error name";
                     }
@@ -231,6 +234,12 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
             }
         }
         return "fail";
+    }
+
+    @Override
+    public String autoGhost(String id) {
+        registerManager.setLeaderId(id);
+        return id;
     }
 
     private void talkToNpc(int mapId, int no, int idx, String id) {
