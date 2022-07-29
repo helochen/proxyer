@@ -67,13 +67,11 @@ public class DumpDataServiceImpl implements IDumpDataService {
             byte[] bytes = ByteBufUtil.decodeHexDump(hexDump);
             String gbkHex = new String(bytes, Charset.forName("GBK"));
             // 处理抓鬼数据
-            ITaskBean taskBean = this.createTaskBeanByReturnDataV2(gbkHex);
-            if (null != taskBean) {
-                taskDataManager.registerTaskBeanV2(taskBean);
-            }
-            logger.info("\n{}:{}->\t发送原始16进制数据=>{},\t发送16进制数据=>{},\n{}:{}->\t发送GBK解析数据=> {}",
-                    from, port, originalHexDump, hexDump, from, port, gbkHex);
+            this.createTaskBeanByReturnDataV2(gbkHex);
 
+/*            logger.info("\n{}:{}->\t发送原始16进制数据=>{},\t发送16进制数据=>{},\n{}:{}->\t发送GBK解析数据=> {}",
+                    from, port, originalHexDump, hexDump, from, port, gbkHex);*/
+            logger.info("{}:{}->\t发送GBK解析数据=> {}", from, port, gbkHex);
         } catch (Exception e) {
             logger.info("数据转换异常：源头：{} ,{}", source, e.getMessage());
         } finally {
@@ -82,7 +80,7 @@ public class DumpDataServiceImpl implements IDumpDataService {
     }
 
 
-    private ITaskBean createTaskBeanByReturnDataV2(String gbk) {
+    private void createTaskBeanByReturnDataV2(String gbk) {
         ITaskBean taskBean = null;
         if (gbk.contains(TaskConstants.TASK_JIANG_HU) || gbk.contains(TaskConstants.TASK_CATCH_GHOST)) {
             Matcher tasksFind = DataSplitConstant.DATA_PATTERN.matcher(gbk);
@@ -140,7 +138,9 @@ public class DumpDataServiceImpl implements IDumpDataService {
                 }
             }
         }
-        return taskBean;
+        if (taskBean != null) {
+            taskDataManager.registerTaskBeanV2(taskBean);
+        }
     }
 
 

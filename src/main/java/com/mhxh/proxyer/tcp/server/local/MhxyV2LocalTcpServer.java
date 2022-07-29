@@ -1,5 +1,6 @@
 package com.mhxh.proxyer.tcp.server.local;
 
+import com.mhxh.proxyer.fake.command.v1.base.IFormatCommand;
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.netty.AbstractLocalTcpProxyServer;
 import com.mhxh.proxyer.tcp.server.handler.ChannelRegisterIdentifySimpleHandler;
@@ -7,14 +8,19 @@ import com.mhxh.proxyer.tcp.server.handler.MessageLengthFromatHandler;
 import com.mhxh.proxyer.tcp.server.handler.MyDataEncryptLoggerSimpleHandler;
 import com.mhxh.proxyer.tcp.server.remote.MhxyV2GameRemoteServerProxyClient;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.ReferenceCountUtil;
+import org.springframework.util.CollectionUtils;
 
 import java.nio.charset.Charset;
+import java.util.Queue;
 
 public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
 
@@ -61,10 +67,28 @@ public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
                                     if (getPort() == 8084) {
                                         // 请求好友信息，代理命令
                                         if (byteBuf.toString(Charset.forName("GBK")).contains("VP,wd,*-*mP,m9, P8,m9,wu,Lq,P8, fN,ET,nB,={}")) {
-                                            logger.info("好友命令请求：-------------------------");
-                                            if (!exchanger.requestFakeCommand(remoteChannel)) {
+                                            final Queue<IFormatCommand> group = exchanger.getGroupCommandV2();
+                                            if (!CollectionUtils.isEmpty(group)) {
+                                                logger.info("阻拦好友命令请求：-------------------------");
+                                                for (IFormatCommand oneCommand : group) {
+                                                    if (oneCommand != null) {
+                                                        // 处理命令
+                                                        final String format = oneCommand.format();
+                                                        final byte[] bytesAgree = ByteBufUtil.decodeHexDump(format);
+                                                        final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(bytesAgree.length);
+                                                        try {
+                                                            buffer.writeBytes(bytesAgree);
+                                                            remoteChannel.writeAndFlush(buffer.retain());
+                                                        } finally {
+                                                            ReferenceCountUtil.release(buffer);
+                                                        }
+                                                    }
+                                                }
+                                            } else {
                                                 remoteChannel.writeAndFlush(byteBuf.retain());
                                             }
+                                        } else {
+                                            remoteChannel.writeAndFlush(byteBuf.retain());
                                         }
                                     } else {
                                         remoteChannel.writeAndFlush(byteBuf.retain());

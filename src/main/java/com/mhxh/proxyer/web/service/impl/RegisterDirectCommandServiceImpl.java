@@ -1,6 +1,7 @@
 package com.mhxh.proxyer.web.service.impl;
 
 import com.mhxh.proxyer.fake.FakeCommandV2RegisterManager;
+import com.mhxh.proxyer.fake.command.v1.base.IFormatCommand;
 import com.mhxh.proxyer.fake.command.v2.local.LocalAgreeCatchGhostV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalAgreeMoneyTaskV2Command;
 import com.mhxh.proxyer.fake.command.v2.local.LocalChangeMapV2Command;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * file description:
@@ -163,7 +165,7 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
             try {
                 final Queue<ITaskBean> roleTasks = taskDataManager.getRoleTasks();
                 final ITaskBean poll = roleTasks.poll();
-                if (poll != null && StringUtils.hasText(poll.getId())) {
+                if (poll != null && StringUtils.hasText(poll.getId()) && !poll.isFinish()) {
                     // 直接发送干鬼的消息
                     this.gotoXY(poll.getX(), poll.getY(), id);
                     Thread.sleep(200);
@@ -238,8 +240,25 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
 
     @Override
     public String autoGhost(String id) {
-        registerManager.setLeaderId(id);
-        return id;
+        final Channel channel = byteDataExchanger.queryChannelById(id);
+        if (channel != null) {
+            registerManager.setLeaderId(id);
+            if (!byteDataExchanger.hasCommand()) {
+                LocalChangeMapV2Command command = new
+                        LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[26]);
+                Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+                taskQueue.offer(command);
+
+                LocalAgreeCatchGhostV2Command agree = new LocalAgreeCatchGhostV2Command();
+                taskQueue.offer(agree);
+
+                byteDataExchanger.directOfferTaskGroup(taskQueue);
+            }
+            return id;
+        } else {
+            registerManager.setLeaderId(null);
+        }
+        return null;
     }
 
     private void talkToNpc(int mapId, int no, int idx, String id) {

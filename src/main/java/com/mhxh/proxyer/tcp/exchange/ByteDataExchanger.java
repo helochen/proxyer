@@ -29,9 +29,18 @@ import com.mhxh.proxyer.fake.command.v1.remote.refuse.RefuseFlyTicketPopupComman
 import com.mhxh.proxyer.fake.command.v1.remote.refuse.RefuseQingLongTaskPopupCommand;
 import com.mhxh.proxyer.fake.command.v1.remote.refuse.RefuseSkillXianLingDianpuPoppupCommand;
 import com.mhxh.proxyer.fake.command.v1.remote.refuse.RefuseTaskListPopupCommand;
+import com.mhxh.proxyer.fake.command.v2.local.LocalAgreeCatchGhostV2Command;
+import com.mhxh.proxyer.fake.command.v2.local.LocalChangeMapV2Command;
+import com.mhxh.proxyer.fake.command.v2.local.LocalKillGhostTaskV2Command;
+import com.mhxh.proxyer.fake.command.v2.local.LocalQueryTaskV2Commend;
+import com.mhxh.proxyer.fake.command.v2.local.LocalRequestCatchGhostV2Command;
+import com.mhxh.proxyer.fake.command.v2.local.LocalSendWalkingPixelV2Command;
+import com.mhxh.proxyer.fake.command.v2.local.LocalSendWalkingV2Command;
 import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendCommandRuleConstants;
+import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendV2CommandRuleConstants;
 import com.mhxh.proxyer.tcp.game.constants.MapConstants;
 import com.mhxh.proxyer.tcp.game.constants.SectMapConstants;
+import com.mhxh.proxyer.tcp.game.constants.TaskConstants;
 import com.mhxh.proxyer.tcp.game.task.ITaskBean;
 import com.mhxh.proxyer.tcp.service.IDumpDataService;
 import com.mhxh.proxyer.web.patch.CatchGhostTaskPatch;
@@ -42,12 +51,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
@@ -64,15 +73,13 @@ public class ByteDataExchanger {
     /**
      * 增加一个命令列表，每一个命令都是由一系列命令构成
      */
-    private final Queue<Queue<IFormatCommand>> tasks = new ConcurrentLinkedDeque<>();
+    private final Deque<Queue<IFormatCommand>> tasks = new ConcurrentLinkedDeque<>();
 
     /**
      * 过滤部分服务器数据列表
      */
     private final Set<IRefuseFilter> filters = new ConcurrentSkipListSet<>();
 
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
 
     @Autowired
     @Qualifier("taskExecutor")
@@ -144,12 +151,18 @@ public class ByteDataExchanger {
      * @param taskQueue
      */
     public void addFakeCommand(Queue<IFormatCommand> taskQueue) {
-        tasks.offer(taskQueue);
+        if (!CollectionUtils.isEmpty(taskQueue)) {
+            tasks.offer(taskQueue);
+        }
         synchronized (this) {
             if (CollectionUtils.isEmpty(currentCommandQueue)) {
                 currentCommandQueue = tasks.poll();
             }
         }
+    }
+
+    public synchronized Queue<IFormatCommand> getGroupCommandV2() {
+        return tasks.poll();
     }
 
     /**
@@ -385,12 +398,94 @@ public class ByteDataExchanger {
     }
 
 
-    public boolean requestFakeCommand(Channel remoteChannel) {
-        final String id = repickCodeChannel.get(remoteChannel);
-        if (StringUtils.hasText(id) && id.equals(fakeCommandV2RegisterManager.getLeaderId())) {
-            fakeCommandV2RegisterManager.sendDirectCommand(id, remoteChannel);
-            return true;
+    /**
+     * 发送飞行地图功能
+     *
+     * @param mapName
+     */
+    public void registerFlyDirectMapV2(String mapName) {
+        if (StringUtils.hasText(fakeCommandV2RegisterManager.getLeaderId())
+                && TaskConstants.FLY_TO_MAP.containsKey(mapName)) {
+            Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+            taskQueue.offer(new
+                    LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[
+                    TaskConstants.FLY_TO_MAP.get(mapName)]));
+
+            tasks.addLast(taskQueue);
         }
-        return false;
+    }
+
+    /**
+     * 战斗
+     *
+     * @param next
+     */
+    public void registerFightWithNpcCommandV2(ITaskBean next) {
+        if (StringUtils.hasText(fakeCommandV2RegisterManager.getLeaderId())) {
+            Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+            taskQueue.offer(new LocalSendWalkingV2Command(next.getX(), next.getY()));
+            taskQueue.offer( new LocalSendWalkingPixelV2Command(next.getX(), next.getY()));
+
+            tasks.addLast(taskQueue);
+
+
+            LocalRequestCatchGhostV2Command request = null;
+            if (next.getId().length() == 28) {
+                request = new
+                        LocalRequestCatchGhostV2Command(next.getMapId(), next.getSerialNo(),
+                        next.getId(), next.getSerialNo(),
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[1][0],
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[1][1]);
+            } else if (next.getId().length() == 27) {
+                request = new
+                        LocalRequestCatchGhostV2Command(next.getMapId(), next.getSerialNo(),
+                        next.getId(), next.getSerialNo(),
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[0][0],
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[0][1]);
+            } else if (next.getId().length() == 26) {
+                request = new
+                        LocalRequestCatchGhostV2Command(next.getMapId(), next.getSerialNo(),
+                        next.getId(), next.getSerialNo(),
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[2][0],
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[2][1]);
+            } else if (next.getId().length() == 25) {
+                request = new
+                        LocalRequestCatchGhostV2Command(next.getMapId(), next.getSerialNo(),
+                        next.getId(), next.getSerialNo(),
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[3][0],
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[3][1]);
+            } else {
+                logger.info("抓鬼数据异常：{},{}", next.getNpcName(), next.getMapName());
+            }
+            if (request != null) {
+
+                Queue<IFormatCommand> fightQueue = new ConcurrentLinkedDeque<>();
+                fightQueue.offer(request);
+                fightQueue.offer(new LocalKillGhostTaskV2Command(next.getMapId(), next.getNpcName()));
+                next.setId(null).setMapId(null).setSerialNo(null).initNpcTargetMapName(null);
+                next.finish();
+
+                tasks.addLast(fightQueue);
+
+
+                // 领抓鬼任务
+                Queue<IFormatCommand> getTaskQueue = new ConcurrentLinkedDeque<>();
+                int dst = System.currentTimeMillis() % 4 == 1 ? 26 : 25;
+                getTaskQueue.offer(new
+                        LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[dst]));
+                getTaskQueue.offer(new LocalAgreeCatchGhostV2Command());
+                getTaskQueue.offer(new LocalQueryTaskV2Commend());
+
+                tasks.addLast(getTaskQueue);
+            }
+        }
+    }
+
+    public boolean hasCommand() {
+        return !tasks.isEmpty() && !CollectionUtils.isEmpty(currentCommandQueue);
+    }
+
+    public void directOfferTaskGroup(Queue<IFormatCommand> taskQueue) {
+        tasks.addLast(taskQueue);
     }
 }

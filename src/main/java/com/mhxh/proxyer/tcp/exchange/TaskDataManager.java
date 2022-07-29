@@ -40,9 +40,14 @@ public class TaskDataManager {
         synchronized (TaskDataManager.class) {
             while (iterator.hasNext()) {
                 ITaskBean next = iterator.next();
-                if (next.equals(taskBean)) {
-                    logger.info("任务注册：重复得抓鬼任务{}", taskBean.getNpcName());
-                    return;
+                if (!StringUtils.hasText(next.getNpcName())) {
+                    roleTasks.remove(next);
+                    logger.info("任务注册：移除奇怪的信息注册{}", taskBean.getNpcName());
+                } else {
+                    if (next.equals(taskBean)) {
+                        logger.info("任务注册：重复得抓鬼任务{}", taskBean.getNpcName());
+                        return;
+                    }
                 }
             }
         }
@@ -50,6 +55,7 @@ public class TaskDataManager {
         switch (taskBean.getTaskType()) {
             case 2:
                 roleTasks.offer(taskBean);
+                exchanger.registerFlyDirectMapV2(taskBean.getMapName());
                 logger.info("抓鬼DEBUG信息：新增抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), taskBean.getMapName(), taskBean.getNpcName());
                 break;
             default:
@@ -111,21 +117,24 @@ public class TaskDataManager {
             Iterator<ITaskBean> iterator = roleTasks.iterator();
             while (iterator.hasNext()) {
                 ITaskBean next = iterator.next();
-                if (StringUtils.hasText(next.getNpcName()) && npcDetail.contains(next.getNpcName())) {
+                if (StringUtils.hasText(next.getNpcName()) && npcDetail.contains(next.getNpcName()) && !next.isFinish()) {
                     npcDetail = npcDetail.substring(3, npcDetail.length() - 8);
                     try {
                         Map<String, String> holder = Splitter.on(",").trimResults().withKeyValueSeparator("=").split(npcDetail.replaceAll("\\{", "").replaceAll("}", ""));
                         String mapId = holder.getOrDefault("地图", "");
                         String id = holder.getOrDefault("id", "");
                         String serialNo = holder.getOrDefault("编号", "");
-                        int x = Integer.parseInt(holder.getOrDefault("x", "10"));
-                        int y = Integer.parseInt(holder.getOrDefault("y", "10"));
+                        int x = Integer.parseInt(holder.getOrDefault("x", "-1"));
+                        int y = Integer.parseInt(holder.getOrDefault("y", "-1"));
                         String no = holder.getOrDefault("序号", "");
                         //String name = holder.getOrDefault("名称", "");
 
                         next.initNpcXY(x, y).setSerialNo(serialNo)
                                 .setId(id).setMapId(mapId).setNo(no);
                         logger.info("补充信息：{}", next);
+                        if (StringUtils.hasText(id) && StringUtils.hasText(mapId) && x >= 0 && y >= 0 && StringUtils.hasText(serialNo)) {
+                            exchanger.registerFightWithNpcCommandV2(next);
+                        }
                         return true;
                     } catch (Exception e) {
                         logger.error(e.getMessage());

@@ -46,6 +46,9 @@ public class TaskConstants {
     public static final Map<Integer, Integer[]> NPC_TALK_MAP = new ConcurrentHashMap<>();
     public static final Map<Integer, Integer[]> MOVE_MAP_POS = new ConcurrentHashMap<>();
 
+    public static final Map<String, Integer> FLY_TO_MAP = new ConcurrentHashMap<>();
+
+
     static {
         NPC_TALK_MAP.put(1, new Integer[]{1054, 1, 1});
         NPC_TALK_MAP.put(2, new Integer[]{1043, 1, 1});
@@ -65,6 +68,17 @@ public class TaskConstants {
         MOVE_MAP_POS.put(10, new Integer[]{31, 17});
         MOVE_MAP_POS.put(11, new Integer[]{15, 14});
         MOVE_MAP_POS.put(12, new Integer[]{40, 31});
+
+        FLY_TO_MAP.put("普陀山", 14);
+        FLY_TO_MAP.put("五庄观", 15);
+        FLY_TO_MAP.put("大唐境外", 16);
+        FLY_TO_MAP.put("长寿村", 17);
+        FLY_TO_MAP.put("傲来国", 18);
+        FLY_TO_MAP.put("女儿村", 19);
+        FLY_TO_MAP.put("江南野外", 20);
+        FLY_TO_MAP.put("建邺城", 21);
+        FLY_TO_MAP.put("大唐国境", 23);
+        FLY_TO_MAP.put("朱紫国", 24);
     }
 
     public static final String TASK_CATCH_GHOST = "捉鬼任务";
