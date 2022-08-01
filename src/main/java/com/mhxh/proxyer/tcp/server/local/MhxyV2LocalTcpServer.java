@@ -69,9 +69,10 @@ public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
                                         if (byteBuf.toString(Charset.forName("GBK")).contains("VP,wd,*-*mP,m9, P8,m9,wu,Lq,P8, fN,ET,nB,={}")) {
                                             final Queue<IFormatCommand> group = exchanger.getGroupCommandV2();
                                             if (!CollectionUtils.isEmpty(group)) {
-                                                logger.info("阻拦好友命令请求：-------------------------");
+
                                                 for (IFormatCommand oneCommand : group) {
                                                     if (oneCommand != null) {
+                                                        logger.info("阻拦好友命令请求：-------------------------,消息类型：{}", oneCommand.getClass());
                                                         // 处理命令
                                                         final String format = oneCommand.format();
                                                         final byte[] bytesAgree = ByteBufUtil.decodeHexDump(format);
