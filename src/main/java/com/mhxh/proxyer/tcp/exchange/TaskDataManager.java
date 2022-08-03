@@ -40,7 +40,8 @@ public class TaskDataManager {
         synchronized (TaskDataManager.class) {
             while (iterator.hasNext()) {
                 ITaskBean next = iterator.next();
-                if (!StringUtils.hasText(next.getNpcName())) {
+                if (next.isFinish() || "null".equals(next.getNpcName())
+                        || next.getNpcName() == null) {
                     roleTasks.remove(next);
                     logger.info("任务注册：移除奇怪的信息注册{}", taskBean.getNpcName());
                 } else {
@@ -55,8 +56,9 @@ public class TaskDataManager {
         switch (taskBean.getTaskType()) {
             case 2:
                 roleTasks.offer(taskBean);
-                exchanger.registerFlyDirectMapV2(taskBean.getMapName());
-                logger.info("抓鬼DEBUG信息：新增抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), taskBean.getMapName(), taskBean.getNpcName());
+                if (exchanger.registerFlyDirectMapV2(taskBean.getMapName())) {
+                    logger.info("抓鬼DEBUG信息：新增抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), taskBean.getMapName(), taskBean.getNpcName());
+                }
                 break;
             default:
                 break;

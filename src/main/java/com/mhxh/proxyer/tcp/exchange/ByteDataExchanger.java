@@ -403,16 +403,18 @@ public class ByteDataExchanger {
      *
      * @param mapName
      */
-    public void registerFlyDirectMapV2(String mapName) {
+    public boolean registerFlyDirectMapV2(String mapName) {
         if (StringUtils.hasText(fakeCommandV2RegisterManager.getLeaderId())
                 && TaskConstants.FLY_TO_MAP.containsKey(mapName)) {
             Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
             taskQueue.offer(new
                     LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[
                     TaskConstants.FLY_TO_MAP.get(mapName)]));
-
+            logger.info("V2抓鬼消息注册：飞行地图任务：{}", mapName);
             tasks.addLast(taskQueue);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -424,8 +426,8 @@ public class ByteDataExchanger {
         if (StringUtils.hasText(fakeCommandV2RegisterManager.getLeaderId())) {
             Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
             taskQueue.offer(new LocalSendWalkingV2Command(next.getX(), next.getY()));
-            taskQueue.offer( new LocalSendWalkingPixelV2Command(next.getX(), next.getY()));
-
+            taskQueue.offer(new LocalSendWalkingPixelV2Command(next.getX(), next.getY()));
+            logger.info("V2抓鬼消息注册：移动命令：x:{},y:{}", next.getX(), next.getY());
             tasks.addLast(taskQueue);
 
 
@@ -455,16 +457,16 @@ public class ByteDataExchanger {
                         LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[3][0],
                         LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[3][1]);
             } else {
-                logger.info("抓鬼数据异常：{},{}", next.getNpcName(), next.getMapName());
+                logger.info("V2抓鬼消息注册：抓鬼数据异常：{},{}", next.getNpcName(), next.getMapName());
             }
             if (request != null) {
 
                 Queue<IFormatCommand> fightQueue = new ConcurrentLinkedDeque<>();
                 fightQueue.offer(request);
                 fightQueue.offer(new LocalKillGhostTaskV2Command(next.getMapId(), next.getNpcName()));
+                logger.info("V2抓鬼消息注册：杀鬼命令：{},{}", next.getNpcName(), next.getMapName());
                 next.setId(null).setMapId(null).setSerialNo(null).initNpcTargetMapName(null);
                 next.finish();
-
                 tasks.addLast(fightQueue);
 
 
@@ -475,7 +477,7 @@ public class ByteDataExchanger {
                         LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[dst]));
                 getTaskQueue.offer(new LocalAgreeCatchGhostV2Command());
                 getTaskQueue.offer(new LocalQueryTaskV2Commend());
-
+                logger.info("V2抓鬼消息注册：领取任务：{},{}", TaskConstants.ROLE_CHANGE_MAP_DIRECT[dst], dst);
                 tasks.addLast(getTaskQueue);
             }
         }
