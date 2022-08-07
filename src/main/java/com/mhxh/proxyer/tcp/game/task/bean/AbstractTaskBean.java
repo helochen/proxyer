@@ -149,11 +149,11 @@ public abstract class AbstractTaskBean implements ITaskBean {
     @Override
     public boolean isFinish() {
         if (finish) {
-            logger.info("抓鬼DEBUG信息：DEBUG命令完成抓鬼任务...");
+            logger.info("抓鬼DEBUG信息：DEBUG命令完成抓鬼任务...{}", this.getNpcName());
         }
         boolean timeOut = System.currentTimeMillis() - expired > 60000L;
         if (timeOut) {
-            logger.info("抓鬼DEBUG信息：时间过期导致完成抓鬼任务....");
+            logger.info("抓鬼DEBUG信息：时间过期导致完成抓鬼任务....{}", this.getNpcName());
         }
         return finish || timeOut;
     }
