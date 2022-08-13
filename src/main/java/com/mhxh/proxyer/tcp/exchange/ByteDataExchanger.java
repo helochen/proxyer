@@ -422,6 +422,12 @@ public class ByteDataExchanger {
                         next.getId(), next.getSerialNo(),
                         LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[3][0],
                         LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[3][1]);
+            } else if (next.getId().length() == 24) {
+                request = new
+                LocalRequestCatchGhostV2Command(next.getMapId(), next.getSerialNo(),
+                        next.getId(), next.getSerialNo(),
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[4][0],
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[4][1]);
             } else {
                 logger.info("V2抓鬼消息注册：抓鬼数据异常：{},{}", next.getNpcName(), next.getMapName());
             }
@@ -435,16 +441,21 @@ public class ByteDataExchanger {
                 next.finish();
                 tasks.addLast(fightQueue);
                 // 领抓鬼任务
-                Queue<IFormatCommand> getTaskQueue = new ConcurrentLinkedDeque<>();
-                int dst = System.currentTimeMillis() % 4 == 1 ? 26 : 25;
-                getTaskQueue.offer(new
-                        LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[dst]));
-                getTaskQueue.offer(new LocalAgreeCatchGhostV2Command());
-                getTaskQueue.offer(new LocalQueryTaskV2Commend());
-                logger.info("V2抓鬼消息注册：领取任务：{},{}", TaskConstants.ROLE_CHANGE_MAP_DIRECT[dst], dst);
-                tasks.addLast(getTaskQueue);
+                this.registerCatchGhost();
             }
         }
+    }
+
+
+    public void registerCatchGhost() {
+        Queue<IFormatCommand> getTaskQueue = new ConcurrentLinkedDeque<>();
+        int dst = System.currentTimeMillis() % 4 == 1 ? 26 : 25;
+        getTaskQueue.offer(new
+                LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[dst]));
+        getTaskQueue.offer(new LocalAgreeCatchGhostV2Command());
+        getTaskQueue.offer(new LocalQueryTaskV2Commend());
+        logger.info("V2抓鬼消息注册：强制重新领取任务：{},{}", TaskConstants.ROLE_CHANGE_MAP_DIRECT[dst], dst);
+        tasks.addLast(getTaskQueue);
     }
 
     public boolean hasCommand() {

@@ -21,6 +21,8 @@ public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
 
     private final ByteDataExchanger exchanger;
 
+    private volatile long time = System.currentTimeMillis();
+
     public MhxyV2LocalTcpServer(String ip, int listener, int core, ByteDataExchanger exchanger) {
         super(ip, listener, core);
         this.exchanger = exchanger;
@@ -78,11 +80,18 @@ public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
                                                             Thread.sleep(200);
                                                         } finally {
                                                             ReferenceCountUtil.release(buffer);
+                                                            time = System.currentTimeMillis();
                                                         }
                                                     }
                                                 }
                                             } else {
                                                 remoteChannel.writeAndFlush(byteBuf.retain());
+                                                if (System.currentTimeMillis() - time >= 40 * 60 * 1000) {
+                                                    synchronized (this) {
+                                                        exchanger.registerCatchGhost();
+                                                        time = System.currentTimeMillis();
+                                                    }
+                                                }
                                             }
                                         } else {
                                             remoteChannel.writeAndFlush(byteBuf.retain());

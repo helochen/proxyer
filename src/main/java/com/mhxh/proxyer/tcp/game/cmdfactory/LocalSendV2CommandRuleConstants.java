@@ -1,9 +1,5 @@
 package com.mhxh.proxyer.tcp.game.cmdfactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * file description:
  *
@@ -67,6 +63,7 @@ public class LocalSendV2CommandRuleConstants {
             new String[]{"0e","0a"},
             new String[]{"11","0d"},
             new String[]{"0b","07"},
-            new String[]{"08","04"}
+            new String[]{"08","04"},
+            new String[]{"05","01"}
     };
 }
