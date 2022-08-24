@@ -42,17 +42,15 @@ public class TaskDataManager {
             return;
         }
         Iterator<ITaskBean> iterator = roleTasks.iterator();
-        synchronized (this) {
-            while (iterator.hasNext()) {
-                ITaskBean next = iterator.next();
-                if (next.isFinish()) {
-                    roleTasks.remove(next);
-                    logger.info("任务注册：任务完成{}", taskBean.getNpcName());
-                } else {
-                    if (next.equals(taskBean)) {
-                        logger.info("任务注册：重复得抓鬼任务{}", taskBean.getNpcName());
-                        return;
-                    }
+        while (iterator.hasNext()) {
+            ITaskBean next = iterator.next();
+            if (next.isFinish()) {
+                roleTasks.remove(next);
+                logger.info("任务注册：任务完成{}", taskBean.getNpcName());
+            } else {
+                if (next.equals(taskBean)) {
+                    logger.info("任务注册：重复得抓鬼任务{}", taskBean.getNpcName());
+                    return;
                 }
             }
         }
@@ -60,9 +58,14 @@ public class TaskDataManager {
         // 产生任务对象
         switch (taskBean.getTaskType()) {
             case 2:
-                roleTasks.offer(taskBean);
-                if (exchanger.registerFlyDirectMapV2(taskBean.getMapName())) {
-                    logger.info("抓鬼DEBUG信息：新增抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), taskBean.getMapName(), taskBean.getNpcName());
+                if (taskBean.getMapName().equals("江南野外")) {
+                    logger.info("抓鬼DEBUG信息：取消抓鬼任务");
+                    exchanger.registerCancelGhostTask();
+                } else {
+                    roleTasks.offer(taskBean);
+                    if (exchanger.registerFlyDirectMapV2(taskBean.getMapName())) {
+                        logger.info("抓鬼DEBUG信息：新增抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), taskBean.getMapName(), taskBean.getNpcName());
+                    }
                 }
                 break;
             default:

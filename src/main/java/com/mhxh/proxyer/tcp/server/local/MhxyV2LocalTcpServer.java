@@ -86,7 +86,7 @@ public class MhxyV2LocalTcpServer extends AbstractLocalTcpProxyServer {
                                                 }
                                             } else {
                                                 remoteChannel.writeAndFlush(byteBuf.retain());
-                                                if (System.currentTimeMillis() - time >= 40 * 60 * 1000) {
+                                                if (System.currentTimeMillis() - time >= 20 * 60 * 1000) {
                                                     synchronized (this) {
                                                         exchanger.registerCatchGhost();
                                                         time = System.currentTimeMillis();

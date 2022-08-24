@@ -465,4 +465,13 @@ public class ByteDataExchanger {
     public void directOfferTaskGroup(Queue<IFormatCommand> taskQueue) {
         tasks.addLast(taskQueue);
     }
+
+    public void registerCancelGhostTask() {
+        if (StringUtils.hasText(fakeCommandV2RegisterManager.getLeaderId())){
+            Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+            taskQueue.offer(new LocalCancelGhostV2Command());
+            logger.info("V2抓鬼消息注册：取消任务");
+            tasks.addLast(taskQueue);
+        }
+    }
 }

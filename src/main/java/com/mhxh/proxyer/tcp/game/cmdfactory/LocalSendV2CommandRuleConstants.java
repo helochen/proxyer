@@ -40,6 +40,8 @@ public class LocalSendV2CommandRuleConstants {
 
     // 答应抓鬼请求
     public static final String ROLE_AGREE_CATCH_GHOST_GBK_V2 = "1502*-*do local ret={[1]=\"好的 我帮你\",[2]=1122,[3]=\"钟馗\"} return ret end*-*%s";
+    // 取消抓鬼任务
+    public static final String ROLE_CANCEL_CATCH_GHOST_GBK_V2 = "1502*-*do local ret={[1]=\"我来取消任务\",[2]=1122,[3]=\"钟馗\"} return ret end*-*%s";
 
 
     // 自动领取跑镖任务
