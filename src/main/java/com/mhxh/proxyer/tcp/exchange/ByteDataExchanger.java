@@ -472,6 +472,8 @@ public class ByteDataExchanger {
             taskQueue.offer(new LocalCancelGhostV2Command());
             logger.info("V2抓鬼消息注册：取消任务");
             tasks.addLast(taskQueue);
+
+            this.registerCatchGhost();
         }
     }
 }
