@@ -45,7 +45,7 @@ public class LocalSendV2CommandRuleConstants {
 
 
     // 自动领取跑镖任务
-    public static final String ROLE_GET_MONEY_TASK_GBK_V2 = "1502*-*do local ret={[1]=\"二级镖银（50级能运）\",[2]=1024,[3]=\"郑镖头\"} return ret end*-*%s";
+    public static final String ROLE_GET_MONEY_TASK_GBK_V2 = "1502*-*do local ret={[1]=\"三级镖银（70级能运）\",[2]=1024,[3]=\"郑镖头\"} return ret end*-*%s";
 
     // 查询任务信息
     public static final String ROLE_QUERY_TASK_GBK_V2 = "10*-*do local ret={} return ret end*-*%s";
