@@ -26,6 +26,8 @@ public class TaskDataManager {
     @Autowired
     private ByteDataExchanger exchanger;
 
+
+    private String fiterName;
     /**
      * 当前任务（抓鬼、初出江湖等）的对象管理器
      */
@@ -41,6 +43,19 @@ public class TaskDataManager {
             logger.info("任务注册：移除奇怪的信息注册{}", taskBean.getNpcName());
             return;
         }
+        synchronized (this) {
+
+            if (taskBean.getMapName().equals("江南野外")) {
+                String skip = taskBean.getMapName() + taskBean.getNpcName();
+                if (!skip.equals(fiterName)) {
+                    taskBean.finish();
+                    logger.info("抓鬼DEBUG信息：取消抓鬼任务{}->{}", taskBean.getMapName(), taskBean.getNpcName());
+                    exchanger.registerCancelGhostTask();
+                    fiterName = skip;
+                }
+                return;
+            }
+        }
         Iterator<ITaskBean> iterator = roleTasks.iterator();
         while (iterator.hasNext()) {
             ITaskBean next = iterator.next();
@@ -54,23 +69,21 @@ public class TaskDataManager {
                 }
             }
         }
-
         // 产生任务对象
         switch (taskBean.getTaskType()) {
             case 2:
-                if (taskBean.getMapName().equals("江南野外")) {
-                    logger.info("抓鬼DEBUG信息：取消抓鬼任务");
-                    exchanger.registerCancelGhostTask();
-                } else {
-                    roleTasks.offer(taskBean);
-                    if (exchanger.registerFlyDirectMapV2(taskBean.getMapName())) {
-                        logger.info("抓鬼DEBUG信息：新增抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), taskBean.getMapName(), taskBean.getNpcName());
-                    }
+                roleTasks.offer(taskBean);
+                synchronized (this) {
+                    fiterName = null;
+                }
+                if (exchanger.registerFlyDirectMapV2(taskBean.getMapName())) {
+                    logger.info("抓鬼DEBUG信息：新增抓鬼任务,队伍中包含数量{}:{}->{}", roleTasks.size(), taskBean.getMapName(), taskBean.getNpcName());
                 }
                 break;
             default:
                 break;
         }
+
     }
 
     /**
