@@ -261,6 +261,26 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
         return null;
     }
 
+    @Override
+    public String autoLunhui(String id) {
+        final Channel channel = byteDataExchanger.queryChannelById(id);
+        if (channel != null) {
+            registerManager.setLeaderId(id);
+            if (!byteDataExchanger.hasCommand()) {
+                LocalChangeMapV2Command command = new
+                        LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[20]);
+                Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+                taskQueue.offer(command);
+
+                byteDataExchanger.directOfferTaskGroup(taskQueue);
+            }
+            return id;
+        } else {
+            registerManager.setLeaderId(null);
+        }
+        return null;
+    }
+
     private void talkToNpc(int mapId, int no, int idx, String id) {
         final Channel channel = byteDataExchanger.queryChannelById(id);
         if (channel != null) {

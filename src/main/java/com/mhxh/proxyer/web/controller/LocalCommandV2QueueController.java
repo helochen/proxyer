@@ -52,4 +52,9 @@ public class LocalCommandV2QueueController {
     public String autoGhost(@RequestParam("id") String id) {
         return directCommandService.autoGhost(id);
     }
+
+    @GetMapping("auto-lunhui")
+    public String autoLunhui(@RequestParam("id") String id) {
+        return directCommandService.autoLunhui(id);
+    }
 }

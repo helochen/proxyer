@@ -424,7 +424,7 @@ public class ByteDataExchanger {
                         LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[3][1]);
             } else if (next.getId().length() == 24) {
                 request = new
-                LocalRequestCatchGhostV2Command(next.getMapId(), next.getSerialNo(),
+                        LocalRequestCatchGhostV2Command(next.getMapId(), next.getSerialNo(),
                         next.getId(), next.getSerialNo(),
                         LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[4][0],
                         LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[4][1]);
@@ -467,7 +467,7 @@ public class ByteDataExchanger {
     }
 
     public void registerCancelGhostTask() {
-        if (StringUtils.hasText(fakeCommandV2RegisterManager.getLeaderId())){
+        if (StringUtils.hasText(fakeCommandV2RegisterManager.getLeaderId())) {
             Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
             taskQueue.offer(new
                     LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[26]));
@@ -476,6 +476,48 @@ public class ByteDataExchanger {
             tasks.addLast(taskQueue);
 
             this.registerCatchGhost();
+        }
+    }
+
+    public void registerFightWithLunhuiCommand(ITaskBean taskBean) {
+        if (StringUtils.hasText(fakeCommandV2RegisterManager.getLeaderId()) && tasks.isEmpty()) {
+            Queue<IFormatCommand> taskQueue = new ConcurrentLinkedDeque<>();
+            taskQueue.offer(new LocalSendWalkingV2Command(taskBean.getX(), taskBean.getY()));
+            taskQueue.offer(new LocalSendWalkingPixelV2Command(taskBean.getX(), taskBean.getY()));
+            logger.info("V2轮回消息注册：移动命令：x:{},y:{}", taskBean.getX(), taskBean.getY());
+            tasks.offer(taskQueue);
+
+            LocalRequestLunhuiV2Command request = null;
+            if (taskBean.getId().length() == 28) {
+                request = new LocalRequestLunhuiV2Command(taskBean.getSerialNo(), taskBean.getId(),
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[1][0],
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[1][1]);
+            } else if (taskBean.getId().length() == 27) {
+                request = new LocalRequestLunhuiV2Command(taskBean.getSerialNo(), taskBean.getId(),
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[0][0],
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[0][1]);
+            } else if (taskBean.getId().length() == 26) {
+                request = new LocalRequestLunhuiV2Command(taskBean.getSerialNo(), taskBean.getId(),
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[2][0],
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[2][1]);
+            } else if (taskBean.getId().length() == 25) {
+                request = new LocalRequestLunhuiV2Command(taskBean.getSerialNo(), taskBean.getId(),
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[3][0],
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[3][1]);
+            } else if (taskBean.getId().length() == 24) {
+                request = new LocalRequestLunhuiV2Command(taskBean.getSerialNo(), taskBean.getId(),
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[4][0],
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[4][1]);
+            } else {
+                logger.info("V2人杰消息注册：抓鬼数据异常：{},{}", taskBean.getNpcName(), taskBean.getMapName());
+            }
+
+            if (request != null) {
+                taskQueue.offer(request);
+                taskQueue.offer(new LocalFightLunhuiV2Command());
+                taskQueue.offer(new LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[20]));
+                tasks.offer(taskQueue);
+            }
         }
     }
 }

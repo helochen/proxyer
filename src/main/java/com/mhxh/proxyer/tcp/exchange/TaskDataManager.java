@@ -4,6 +4,7 @@ import com.google.common.base.Splitter;
 import com.mhxh.proxyer.tcp.game.constants.DataSplitConstant;
 import com.mhxh.proxyer.tcp.game.constants.TaskConstants;
 import com.mhxh.proxyer.tcp.game.task.ITaskBean;
+import com.mhxh.proxyer.tcp.game.task.bean.DestroyTempNpcTaskBean;
 import com.mhxh.proxyer.web.patch.CatchGhostTaskPatch;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -137,37 +138,53 @@ public class TaskDataManager {
      */
     public boolean complementTaskV2(String npcDetail) {
         if (npcDetail.contains("事件=\"单位\"")) {
+            // 注册的抓鬼信息
             Iterator<ITaskBean> iterator = roleTasks.iterator();
             while (iterator.hasNext()) {
                 ITaskBean next = iterator.next();
                 if (StringUtils.hasText(next.getNpcName()) && npcDetail.contains(next.getNpcName()) && !next.isFinish()) {
                     synchronized (TaskDataManager.class) {
                         npcDetail = npcDetail.substring(3, npcDetail.length() - 8);
-                        try {
-                            Map<String, String> holder = Splitter.on(",").trimResults().withKeyValueSeparator("=").split(npcDetail.replaceAll("\\{", "").replaceAll("}", ""));
-                            String mapId = holder.getOrDefault("地图", "");
-                            String id = holder.getOrDefault("id", "");
-                            String serialNo = holder.getOrDefault("编号", "");
-                            int x = Integer.parseInt(holder.getOrDefault("x", "-1"));
-                            int y = Integer.parseInt(holder.getOrDefault("y", "-1"));
-                            String no = holder.getOrDefault("序号", "");
-                            //String name = holder.getOrDefault("名称", "");
-
-                            next.initNpcXY(x, y).setSerialNo(serialNo)
-                                    .setId(id).setMapId(mapId).setNo(no);
-                            logger.info("补充信息：{}", next);
-                            if (StringUtils.hasText(id) && StringUtils.hasText(mapId) && x >= 0 && y >= 0 && StringUtils.hasText(serialNo)) {
-                                exchanger.registerFightWithNpcCommandV2(next);
-                            }
-                            return true;
-                        } catch (Exception e) {
-                            logger.error(e.getMessage());
+                        this.fillNpcTaskInfo(next, npcDetail);
+                        logger.info("补充信息：{}->{}", next.getMapName(), next.getNpcName());
+                        if (StringUtils.hasText(next.getId()) && StringUtils.hasText(next.getMapId()) && next.getX() >= 0 && next.getY() >= 0 && StringUtils.hasText(next.getSerialNo())) {
+                            exchanger.registerFightWithNpcCommandV2(next);
                         }
+                        return true;
+
                     }
                 }
             }
+            // 轮回
+            if (npcDetail.contains("轮回-人劫")) {
+                ITaskBean taskBean = new DestroyTempNpcTaskBean();
+                this.fillNpcTaskInfo(taskBean, npcDetail.substring(3, npcDetail.length() - 8));
+                if (StringUtils.hasText(taskBean.getId()) && StringUtils.hasText(taskBean.getSerialNo())) {
+                    exchanger.registerFightWithLunhuiCommand(taskBean);
+                }
+                return true;
+            }
         }
         return false;
+    }
+
+    private ITaskBean fillNpcTaskInfo(ITaskBean taskBean, String npcDetail) {
+        try {
+            Map<String, String> holder = Splitter.on(",").trimResults().withKeyValueSeparator("=").split(npcDetail.replaceAll("\\{", "").replaceAll("}", ""));
+            String mapId = holder.getOrDefault("地图", "");
+            String id = holder.getOrDefault("id", "");
+            String serialNo = holder.getOrDefault("编号", "");
+            int x = Integer.parseInt(holder.getOrDefault("x", "-1"));
+            int y = Integer.parseInt(holder.getOrDefault("y", "-1"));
+            String no = holder.getOrDefault("序号", "");
+            //String name = holder.getOrDefault("名称", "");
+
+            taskBean.initNpcXY(x, y).setSerialNo(serialNo)
+                    .setId(id).setMapId(mapId).setNo(no);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        return taskBean;
     }
 
     /**
