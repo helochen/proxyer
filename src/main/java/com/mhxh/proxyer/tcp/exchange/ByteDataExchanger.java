@@ -515,8 +515,11 @@ public class ByteDataExchanger {
             if (request != null) {
                 taskQueue.offer(request);
                 taskQueue.offer(new LocalFightLunhuiV2Command());
-                taskQueue.offer(new LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[20]));
                 tasks.offer(taskQueue);
+
+                Queue<IFormatCommand> runMap = new ConcurrentLinkedDeque<>();
+                runMap.offer(new LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[20]));
+                tasks.offer(runMap);
             }
         }
     }
