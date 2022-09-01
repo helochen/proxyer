@@ -506,8 +506,12 @@ public class ByteDataExchanger {
                 request = new LocalRequestLunhuiV2Command(taskBean.getSerialNo(), taskBean.getId(),
                         LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[4][0],
                         LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[4][1]);
-            } else {
-                logger.info("V2人杰消息注册：抓鬼数据异常：{},{}", taskBean.getNpcName(), taskBean.getMapName());
+            } else if (taskBean.getId().length() == 23) {
+                request = new LocalRequestLunhuiV2Command(taskBean.getSerialNo(), taskBean.getId(),
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[5][0],
+                        LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[5][1]);
+            }else {
+                logger.info("V2轮回消息注册：点杀数据异常：{}", taskBean.getId());
             }
 
             if (request != null) {
