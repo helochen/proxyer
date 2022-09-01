@@ -13,4 +13,9 @@ public class DestroyTempNpcTaskBean extends AbstractTaskBean implements ITaskBea
         super();
         this.taskType = 2;
     }
+
+    public DestroyTempNpcTaskBean(int type) {
+        super();
+        this.taskType = type;
+    }
 }

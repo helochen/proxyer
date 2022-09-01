@@ -38,6 +38,12 @@
             });
         }
 
+        function autoLunhui() {
+            $.get("/v2/auto-lunhui?id=" + document.getElementById("id").value, function (result) {
+                console.log(result);
+            });
+        }
+
     </script>
 </head>
 <body>
@@ -83,5 +89,9 @@
 </br>
 </br>
 <button type="button" onclick="autoGhost();">自动</button>
+</br>
+</br>
+</br>
+<button type="button" onclick="autoLunhui();">自动轮回</button>
 </body>
 </html>

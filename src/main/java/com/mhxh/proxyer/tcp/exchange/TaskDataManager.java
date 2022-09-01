@@ -46,7 +46,7 @@ public class TaskDataManager {
         }
         synchronized (this) {
 
-            if (taskBean.getMapName().equals("江南野外")) {
+            if (taskBean.getMapName().equals("江南野外") && taskBean.getTaskType() == 2) {
                 String skip = taskBean.getMapName() + taskBean.getNpcName();
                 if (!skip.equals(fiterName)) {
                     taskBean.finish();
