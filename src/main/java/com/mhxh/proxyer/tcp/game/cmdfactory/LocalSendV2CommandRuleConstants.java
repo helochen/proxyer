@@ -73,6 +73,7 @@ public class LocalSendV2CommandRuleConstants {
             new String[]{"11", "0d"},
             new String[]{"0b", "07"},
             new String[]{"08", "04"},
-            new String[]{"05", "01"}
+            new String[]{"05", "01"},
+            new String[]{"02", "fe"}
     };
 }

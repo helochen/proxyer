@@ -38,6 +38,11 @@
             });
         }
 
+        function clearCmd() {
+            $.get("/local/clear", function (result) {
+                console.log(result);
+            });
+        }
         function autoLunhui() {
             $.get("/v2/auto-lunhui?id=" + document.getElementById("id").value, function (result) {
                 console.log(result);
@@ -89,6 +94,10 @@
 </br>
 </br>
 <button type="button" onclick="autoGhost();">自动</button>
+</br>
+</br>
+</br>
+<button type="button" onclick="clearCmd();">清除命令</button>
 </br>
 </br>
 </br>
