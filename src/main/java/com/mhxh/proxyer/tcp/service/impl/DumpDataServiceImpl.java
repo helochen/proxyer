@@ -69,8 +69,8 @@ public class DumpDataServiceImpl implements IDumpDataService {
             // 处理抓鬼数据
             this.createTaskBeanByReturnDataV2(gbkHex);
 
-/*            logger.info("\n{}:{}->\t发送原始16进制数据=>{},\t发送16进制数据=>{},\n{}:{}->\t发送GBK解析数据=> {}",
-                    from, port, originalHexDump, hexDump, from, port, gbkHex);*/
+/*            logger.info("\n{}:{}->\t发送原始16进制数据=>{},\t发送16进制数据=>{}",
+                    from, port, originalHexDump, hexDump);*/
             logger.info("{}:{}->\t发送GBK解析数据=> {}", from, port, gbkHex);
         } catch (Exception e) {
             logger.info("数据转换异常：源头：{} ,{}", source, e.getMessage());

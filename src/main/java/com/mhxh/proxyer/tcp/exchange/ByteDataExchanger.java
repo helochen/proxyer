@@ -512,7 +512,7 @@ public class ByteDataExchanger {
                 request = new LocalRequestLunhuiV2Command(taskBean.getSerialNo(), taskBean.getId(),
                         LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[5][0],
                         LocalSendV2CommandRuleConstants.ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER[5][1]);
-            }else {
+            } else {
                 logger.info("V2轮回消息注册：点杀数据异常：{}", taskBean.getId());
             }
 
@@ -520,7 +520,7 @@ public class ByteDataExchanger {
                 taskQueue.offer(request);
                 taskQueue.offer(new LocalFightLunhuiV2Command());
                 tasks.offer(taskQueue);
-
+                logger.info("V2轮回消息注册：点杀任务：id->{}->{}", taskBean.getId().length(), taskBean.getId());
                 Queue<IFormatCommand> runMap = new ConcurrentLinkedDeque<>();
                 runMap.offer(new LocalChangeMapV2Command(TaskConstants.ROLE_CHANGE_MAP_DIRECT[20]));
                 tasks.offer(runMap);

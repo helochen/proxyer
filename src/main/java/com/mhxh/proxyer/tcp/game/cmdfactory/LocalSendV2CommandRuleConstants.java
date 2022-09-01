@@ -11,6 +11,8 @@ public class LocalSendV2CommandRuleConstants {
 
     // 返回数据头
     public static final String COMMEND_PROTO_GET_HEADER = "0180cb91da01";
+    // 第二种数据头
+    public static final String COMMEND_PROTO_POST_HEADER = "0280cb91da02";
     // 请求数据头信息
     public static final String COMMAND_PROTO_HEADER = "0080cb91da00";
     // 地图行走的请求

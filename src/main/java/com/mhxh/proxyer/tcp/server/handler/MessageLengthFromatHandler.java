@@ -1,6 +1,8 @@
 package com.mhxh.proxyer.tcp.server.handler;
 
+import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendV2CommandRuleConstants;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
@@ -32,12 +34,27 @@ public class MessageLengthFromatHandler extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 
-        if (in.readableBytes() > PROTO_HEAD_LENGTH) {
-            in.markReaderIndex();
-            int length = in.readByte() & 0xff;
-            in.resetReaderIndex();
-            if (in.readableBytes() >= length + 4) {
-                out.add(in.readRetainedSlice(length + 4));
+
+        String hexGBK = ByteBufUtil.hexDump(in);
+        logger.info("hexGBK->{}" , hexGBK);
+        if (hexGBK.contains(LocalSendV2CommandRuleConstants.COMMEND_PROTO_GET_HEADER)) {
+            int length = hexGBK.indexOf("2a56502c");
+            if (length >=0 && in.readableBytes() >= length / 2 + 31) {
+                out.add(in.readRetainedSlice(length / 2 + 31));
+            }
+        } else if (hexGBK.contains(LocalSendV2CommandRuleConstants.COMMEND_PROTO_POST_HEADER)) {
+            int length = hexGBK.indexOf("72657475726e2072657420656e64");
+            if (length >=0 && in.readableBytes() >= length / 2 + 14) {
+                out.add(in.readRetainedSlice(length / 2 + 14));
+            }
+        } else {
+            if (in.readableBytes() > PROTO_HEAD_LENGTH) {
+                in.markReaderIndex();
+                int length = in.readByte() & 0xff;
+                in.resetReaderIndex();
+                if (in.readableBytes() >= length + 4) {
+                    out.add(in.readRetainedSlice(length + 4));
+                }
             }
         }
     }
