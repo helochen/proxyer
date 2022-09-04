@@ -11,6 +11,12 @@
                 console.log(result);
             });
         }
+
+        function skill() {
+            $.get("/v2/skill?x1=" + document.getElementById("x").value +"&x2=" + document.getElementById("y").value+ "&id=" + document.getElementById("id").value, function (result) {
+                console.log(result);
+            });
+        }
     </script>
 </head>
 <body>
@@ -61,5 +67,12 @@
 </br></br></br>
 <button type="button" onclick="send2Server(34);">冯记铁</button>
 </br>
+</br>
+</br>
+</br>
+</br>
+<input type="text" id="x"><br>
+<input type="text" id="y"><br>
+<button type="button" onclick="skill();">点技能</button>
 </body>
 </html>

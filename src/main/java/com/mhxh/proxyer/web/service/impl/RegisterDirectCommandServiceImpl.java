@@ -2,15 +2,7 @@ package com.mhxh.proxyer.web.service.impl;
 
 import com.mhxh.proxyer.fake.FakeCommandV2RegisterManager;
 import com.mhxh.proxyer.fake.command.v1.base.IFormatCommand;
-import com.mhxh.proxyer.fake.command.v2.local.LocalAgreeCatchGhostV2Command;
-import com.mhxh.proxyer.fake.command.v2.local.LocalAgreeMoneyTaskV2Command;
-import com.mhxh.proxyer.fake.command.v2.local.LocalChangeMapV2Command;
-import com.mhxh.proxyer.fake.command.v2.local.LocalKillGhostTaskV2Command;
-import com.mhxh.proxyer.fake.command.v2.local.LocalQueryTaskV2Commend;
-import com.mhxh.proxyer.fake.command.v2.local.LocalRequestCatchGhostV2Command;
-import com.mhxh.proxyer.fake.command.v2.local.LocalSendWalkingPixelV2Command;
-import com.mhxh.proxyer.fake.command.v2.local.LocalSendWalkingV2Command;
-import com.mhxh.proxyer.fake.command.v2.local.LocalTalkToNpcV2Command;
+import com.mhxh.proxyer.fake.command.v2.local.*;
 import com.mhxh.proxyer.tcp.exchange.ByteDataExchanger;
 import com.mhxh.proxyer.tcp.exchange.TaskDataManager;
 import com.mhxh.proxyer.tcp.game.cmdfactory.LocalSendV2CommandRuleConstants;
@@ -279,6 +271,25 @@ public class RegisterDirectCommandServiceImpl implements IRegisterDirectCommandS
             registerManager.setLeaderId(null);
         }
         return null;
+    }
+
+    @Override
+    public String getSkillFromBook(int x1, int x2, String id) {
+
+        final Channel channel = byteDataExchanger.queryChannelById(id);
+        if (channel != null) {
+            LocalGetSkillFromBookV2Command skill = new LocalGetSkillFromBookV2Command(x1, x2);
+            String hexTask = skill.format();
+            byte[] getTask = ByteBufUtil.decodeHexDump(hexTask);
+            final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer(getTask.length);
+            try {
+                buffer.writeBytes(getTask);
+                channel.writeAndFlush(buffer.retain());
+            } finally {
+                ReferenceCountUtil.release(buffer);
+            }
+        }
+        return id;
     }
 
     private void talkToNpc(int mapId, int no, int idx, String id) {

@@ -57,4 +57,9 @@ public class LocalCommandV2QueueController {
     public String autoLunhui(@RequestParam("id") String id) {
         return directCommandService.autoLunhui(id);
     }
+
+    @GetMapping("skill")
+    public String getSkill(@RequestParam("x1") int x1, @RequestParam("x2") int x2, @RequestParam("id") String id) {
+        return directCommandService.getSkillFromBook(x1, x2, id);
+    }
 }

@@ -69,6 +69,9 @@ public class LocalSendV2CommandRuleConstants {
     // 登录信息
     public static final String LOGIN_OTHER_ROLE_GBK_V2 = "4*-*%s*-*%s";
 
+    // 吸取技能书
+    public static final String ROLE_GET_BOOK_SKILL_GBK_V2 = "5012*-*do local ret={[\"序列1\"]=%s,[\"序列\"]=%s} return ret end*-*%s";
+
     // 抓鬼的奇怪头信息
     public static final String[][] ROLE_FIGHT_WITH_GHOST_STRANGE_HEADER = new String[][]{
             new String[]{"0e", "0a"},

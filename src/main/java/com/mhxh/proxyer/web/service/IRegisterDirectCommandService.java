@@ -21,4 +21,6 @@ public interface IRegisterDirectCommandService {
     String autoGhost(String id);
 
     String autoLunhui(String id);
+
+    String getSkillFromBook(int x1, int x2, String id);
 }
