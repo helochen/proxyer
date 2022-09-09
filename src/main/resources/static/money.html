@@ -12,8 +12,8 @@
             });
         }
 
-        function skill() {
-            $.get("/v2/skill?x1=" + document.getElementById("x").value +"&x2=" + document.getElementById("y").value+ "&id=" + document.getElementById("id").value, function (result) {
+        function goto() {
+            $.get("/v2/goto?x=" + document.getElementById("x").value +"&y=" + document.getElementById("y").value+ "&id=" + document.getElementById("id").value, function (result) {
                 console.log(result);
             });
         }
@@ -51,28 +51,21 @@
 </br>
 </br>
 </br>
-</br>
-</br>
 <button type="button" onclick="send2Server(27);">宫殿里</button>
 <button type="button" onclick="send2Server(29);">红楼梦</button>
 <button type="button" onclick="send2Server(30);">麒麟山</button>
-</br>
-</br>
 </br>
 </br>
 <button type="button" onclick="send2Server(31);">地狱迷宫三层</button>
 <button type="button" onclick="send2Server(32);">地狱迷宫四层</button>
 <button type="button" onclick="send2Server(33);">无名鬼城</button>
 </br>
-</br></br></br>
+</br>
 <button type="button" onclick="send2Server(34);">冯记铁</button>
-</br>
-</br>
-</br>
 </br>
 </br>
 <input type="text" id="x"><br>
 <input type="text" id="y"><br>
-<button type="button" onclick="skill();">点技能</button>
+<button type="button" onclick="goto();">直飞</button>
 </body>
 </html>
